@@ -22,5 +22,6 @@
                 android:value="" />
         </activity>
     </application>
+<!--    android:backgroundColor="@color/lime_harmonized_text">-->
 
 </manifest>

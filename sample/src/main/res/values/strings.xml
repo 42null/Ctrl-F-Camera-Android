@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Tesseract4Android Sample</string>
+    <string name="app_name">Tesseract4Android &amp; OpenCV CameraCtrl+4 </string>
+<!--    <string name="app_banner_top">Camera Ctrl+F</string>-->
 </resources>
