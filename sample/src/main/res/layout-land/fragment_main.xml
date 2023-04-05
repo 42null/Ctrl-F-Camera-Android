@@ -18,7 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            tools:src="@tools:sample/avatars" />
+            tools:src="@tools:sample/avatars"
+            android:background="#AA0"
+            />
 
         <TextView
             android:id="@+id/status"
