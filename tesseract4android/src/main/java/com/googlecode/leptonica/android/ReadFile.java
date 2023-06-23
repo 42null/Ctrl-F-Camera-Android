@@ -35,7 +35,7 @@ public class ReadFile {
 		System.loadLibrary("leptonica");
 	}
 
-	private static final String LOG_TAG = ReadFile.class.getSimpleName();
+	private static final String TAG = ReadFile.class.getSimpleName();
 
 	/**
 	 * Creates a 32bpp Pix object from encoded data. Supported formats are BMP,
@@ -46,7 +46,7 @@ public class ReadFile {
 	 */
 	public static Pix readMem(byte[] encodedData) {
 		if (encodedData == null) {
-			Log.e(LOG_TAG, "Image data byte array must be non-null");
+			Log.e(TAG, "Image data byte array must be non-null");
 			return null;
 		}
 
@@ -129,15 +129,15 @@ public class ReadFile {
 	 */
 	public static Pix readFile(File file) {
 		if (file == null) {
-			Log.e(LOG_TAG, "File must be non-null");
+			Log.e(TAG, "File must be non-null");
 			return null;
 		}
 		if (!file.exists()) {
-			Log.e(LOG_TAG, "File does not exist");
+			Log.e(TAG, "File does not exist");
 			return null;
 		}
 		if (!file.canRead()) {
-			Log.e(LOG_TAG, "Cannot read file");
+			Log.e(TAG, "Cannot read file");
 			return null;
 		}
 
@@ -152,7 +152,7 @@ public class ReadFile {
 
 		final Bitmap bmp = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
 		if (bmp == null) {
-			Log.e(LOG_TAG, "Cannot decode bitmap");
+			Log.e(TAG, "Cannot decode bitmap");
 			return null;
 		}
 		final Pix pix = readBitmap(bmp);
@@ -171,18 +171,18 @@ public class ReadFile {
 	 */
 	public static Pix readBitmap(Bitmap bmp) {
 		if (bmp == null) {
-			Log.e(LOG_TAG, "Bitmap must be non-null");
+			Log.e(TAG, "Bitmap must be non-null");
 			return null;
 		}
 		if (bmp.getConfig() != Bitmap.Config.ARGB_8888) {
-			Log.e(LOG_TAG, "Bitmap config must be ARGB_8888");
+			Log.e(TAG, "Bitmap config must be ARGB_8888");
 			return null;
 		}
 
 		long nativePix = nativeReadBitmap(bmp);
 
 		if (nativePix == 0) {
-			Log.e(LOG_TAG, "Failed to read pix from bitmap");
+			Log.e(TAG, "Failed to read pix from bitmap");
 			return null;
 		}
 

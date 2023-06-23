@@ -1,6 +1,7 @@
 package cz.adaptech.tesseract4android.sample.ui.main;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -11,7 +12,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 import java.io.File;
+import java.util.BitSet;
 import java.util.Locale;
 
 public class MainViewModel extends AndroidViewModel {
@@ -61,47 +66,90 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
-    public void recognizeImage(@NonNull File imagePath) {
-        if (!tessInit) {
-            Log.e(TAG, "recognizeImage: Tesseract is not initialized");
-            return;
-        }
-        if (isProcessing()) {
-            Log.e(TAG, "recognizeImage: Processing is in progress");
-            return;
-        }
-        result.setValue("");
-        processing.setValue(true);
-        progress.setValue("Processing...");
-        stopped = false;
-
-        // Start process in another thread
-        new Thread(() -> {
-            tessApi.setImage(imagePath);
-            // Or set it as Bitmap, Pix,...
-            // tessApi.setImage(imageBitmap);
-
-            long startTime = SystemClock.uptimeMillis();
-
-            // Use getHOCRText(0) method to trigger recognition with progress notifications and
-            // ability to cancel ongoing processing.
-            tessApi.getHOCRText(0);
-
-            // Then get just normal UTF8 text as result. Using only this method would also trigger
-            // recognition, but would just block until it is completed.
-            String text = tessApi.getUTF8Text();
-
-            result.postValue(text);
-            processing.postValue(false);
-            if (stopped) {
-                progress.postValue("Stopped.");
-            } else {
-                long duration = SystemClock.uptimeMillis() - startTime;
-                progress.postValue(String.format(Locale.ENGLISH,
-                        "Completed in %.3fs.", (duration / 1000f)));
-            }
-        }).start();
+//    public void recognizeImage(@NonNull File imagePath) {
+//        if (!tessInit) {
+//            Log.e(TAG, "recognizeImage: Tesseract is not initialized");
+//            return;
+//        }
+//        if (isProcessing()) {
+//            Log.e(TAG, "recognizeImage: Processing is in progress");
+//            return;
+//        }
+//        result.setValue("");
+//        processing.setValue(true);
+//        progress.setValue("Processing...");
+//        stopped = false;
+//
+//        // Start process in another thread
+//        new Thread(() -> {
+//            tessApi.setImage(imagePath);
+//            // Or set it as Bitmap, Pix,...
+//            // tessApi.setImage(imageBitmap);
+//
+//            long startTime = SystemClock.uptimeMillis();
+//
+//            // Use getHOCRText(0) method to trigger recognition with progress notifications and
+//            // ability to cancel ongoing processing.
+//            tessApi.getHOCRText(0);
+//
+//            // Then get just normal UTF8 text as result. Using only this method would also trigger
+//            // recognition, but would just block until it is completed.
+//            String text = tessApi.getUTF8Text();
+//
+//            result.postValue(text);
+//            processing.postValue(false);
+//            if (stopped) {
+//                progress.postValue("Stopped.");
+//            } else {
+//                long duration = SystemClock.uptimeMillis() - startTime;
+//                progress.postValue(String.format(Locale.ENGLISH,
+//                        "Completed in %.3fs.", (duration / 1000f)));
+//            }
+//        }).start();
+//    }
+public void recognizeImage(@NonNull Mat image) {
+    if (!tessInit) {
+        Log.e(TAG, "recognizeImage: Tesseract is not initialized");
+        return;
     }
+    if (isProcessing()) {
+        Log.e(TAG, "recognizeImage: Processing is in progress");
+        return;
+    }
+    result.setValue("");
+    processing.setValue(true);
+    progress.setValue("Processing...");
+    stopped = false;
+    Bitmap bitmap = Bitmap.createBitmap(image.width(), image.height(), Bitmap.Config.ARGB_8888);
+    Utils.matToBitmap(image, bitmap);
+
+    // Start process in another thread
+    new Thread(() -> {
+        Log.d(TAG, "Button Pressed original22222");
+        tessApi.setImage(bitmap);
+
+//        long startTime = SystemClock.uptimeMillis();
+
+        // Use getHOCRText(0) method to trigger recognition with progress notifications and
+        // ability to cancel ongoing processing.
+        tessApi.getHOCRText(0);
+
+        // Then get just normal UTF8 text as result. Using only this method would also trigger
+        // recognition, but would just block until it is completed.
+        String text = tessApi.getUTF8Text();
+        Log.d("LOG_TAG", "text = "+text);
+
+//        result.postValue(text);
+//        processing.postValue(false);
+//        if (stopped) {
+//            progress.postValue("Stopped.");
+//        } else {
+//            long duration = SystemClock.uptimeMillis() - startTime;
+//            progress.postValue(String.format(Locale.ENGLISH,
+//                    "Completed in %.3fs.", (duration / 1000f)));
+//        }
+    }).start();
+}
 
     public void stop() {
         if (!isProcessing()) {

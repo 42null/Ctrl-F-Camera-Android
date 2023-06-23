@@ -1,14 +1,6 @@
 package cz.adaptech.tesseract4android.sample;
 
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
-
-import static org.opencv.core.Core.ROTATE_180;
-import static org.opencv.core.Core.rotate;
-import static org.opencv.imgproc.Imgproc.resize;
-
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelStore;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -17,7 +9,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -34,15 +25,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-
-import java.io.File;
-import java.util.Locale;
 
 import cz.adaptech.tesseract4android.sample.ui.main.MainViewModel;
 
@@ -66,7 +49,7 @@ import cz.adaptech.tesseract4android.sample.ui.main.MainViewModel;
 //        }
 //    }
 //}
-public class MainActivity extends CameraActivity implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner {
+public class MainActivityOld extends CameraActivity implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner {
     private static final String TAG = "LOG_TAG";
 
     private static final int CAMERA_PERMISSION_REQUEST = 1;
@@ -75,10 +58,9 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
 
     private TessBaseAPI mTess;
 
-    public static boolean buttonClick = false;
+    boolean buttonClick = false;
 
-//    private final MutableLiveData<String> result = new MutableLiveData<>();
-    private static String result = "NOT YET SET";
+    private final MutableLiveData<String> result = new MutableLiveData<>();
     private final MutableLiveData<Boolean> processing = new MutableLiveData<>(false);
     private ViewModelStore viewModelStore = new ViewModelStore();
     private MainViewModel viewModel;
@@ -133,9 +115,9 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
 
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        Button button = findViewById(R.id.start);
+        Button button = (Button) findViewById(R.id.start);
         button.setOnClickListener(v -> {
-            Log.d(TAG, "Button Pressed original");
+            Log.d(TAG, "Button Pressed");
             buttonClick = true;
         });
 
@@ -174,7 +156,6 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
             Log.d(TAG, "if (!mTess.init(dataPath, \"eng\")) {");
             return;
         }
-        mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO); // Set page segmentation mode
 //        mTess.init(DATA_PATH, LANGUAGE);
 //        mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 //        mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO);
@@ -234,161 +215,145 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
 
 //    @Override
 //    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
-////        return frame.gray();
-////    }
-////        Log.d("LOG_TAG", "Button Pressed2");
-//
-//        // Convert the frame to a Mat object
-//        Mat rgba = frame.rgba();
-//
-//        // Preprocess the image using OpenCV operations
-//        Mat gray = new Mat();
-//        Imgproc.cvtColor(rgba, gray, Imgproc.COLOR_RGBA2GRAY);
-//        Imgproc.GaussianBlur(gray, gray, new Size(3, 3), 0);
-//        Imgproc.threshold(gray, gray, 0, 255, Imgproc.THRESH_BINARY_INV + Imgproc.THRESH_OTSU);
-//
-//        Bitmap bitmap = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
-//        Utils.matToBitmap(gray, bitmap);
+//        // get current camera frame as OpenCV Mat object
+//        Mat mat = frame.gray();
+//        return mat;
+//    }
+//    @Override
+//    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
 //        mFrameCounter++;
-//        if(buttonClick || mFrameCounter == 500){
-//            Log.d(TAG, "A");
+//        // get current camera frame as OpenCV Mat object
+//        Mat mat;
+//        // extract text from bitmap using Tesseract
+//        if(buttonClick){
+//            mat = frame.gray();
 //            buttonClick = false;
-//            System.out.println("BUTTON CLICK!!!!");
-//            Log.d(TAG, "Starting...");
+//            // convert Mat to Bitmap
+//            Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(mat, bitmap);
+//            long currentTime = System.currentTimeMillis();
+//            double fps = mFrameCounter / ((currentTime - mStartTime) / 1000.0);
 //            mTess.setImage(bitmap);
-//            String recognizedText = mTess.getUTF8Text();
-//            System.out.println("BUTTON CLICK!!!!+"+recognizedText);
-//            Log.d(TAG, "recognizedText..."+recognizedText);
+//            String text = mTess.getUTF8Text();
 //
-////            mTess.recycle();
-//            mTess.clear();
+//            // log text to console
+//            Log.d(TAG, "Detected text ("+fps+" fps): " + text);
+//        }else{
+//            mat = frame.gray();
 //        }
-//
-//        return gray;
+//        return mat;
 //    }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
-        // Process the camera frame here
-        Mat rgba = frame.rgba();
+        mFrameCounter++;
+        Mat rgba = frame.gray();
+        Bitmap bmp = Bitmap.createBitmap(rgba.cols(), rgba.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(rgba, bmp);
 
-        // Perform text detection
-        // Assuming you want to process the entire frame, you can adjust the region of interest (ROI) accordingly
-        Rect roi = new Rect(0, 0, rgba.cols(), rgba.rows());
-        Mat cropped = new Mat(rgba, roi);
-
-
-//         resize(cropped, cropped, fx=1.2, fy=1.2, interpolation=cv2.INTER_CUBIC)
-
-        Mat gray = new Mat();
-        Imgproc.cvtColor(cropped, gray, Imgproc.COLOR_RGBA2GRAY);
-
-        // Applying dilation and erosion
-//        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(0.5, 0.5));
-//        Imgproc.dilate(gray, gray, kernel);
-//        Imgproc.erode(gray, gray, kernel);
-
-        // Applying blur
-        Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
-        Imgproc.threshold(gray, gray, 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
-
-////         Alternatively, you can use the bilateral filter or median blur
-//         Imgproc.bilateralFilter(gray, gray,  5, 75, 75);
-//         Imgproc.medianBlur(gray, gray, 3);
-
-//         Adaptive thresholding
-        Imgproc.adaptiveThreshold(gray, gray, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 31, 2);
-
-//         Save the preprocessed image
-//        Imgcodecs.imwrite("path/to/save/preprocessed_image.jpg", gray);
+        // Convert the bitmap to a format supported by Tesseract
+        bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
+        if (buttonClick) {
+            buttonClick = false;
+                // Convert the camera frame to a bitmap
 
 
+                mTess.setImage(bmp);
+                String text = mTess.getUTF8Text();
+                Log.d("OCR Result", text);
 
+                // Release Tesseract when you don't want to use it anymore
+            mTess.recycle();
+            }
+        Mat returning = rgba.clone();
+        Utils.bitmapToMat(bmp, returning);
+        return returning;
+    }
 
+//    @Override
+    public Mat onCameraFrameOld(CameraBridgeViewBase.CvCameraViewFrame frame) {
+        mFrameCounter++;
+        // get current camera frame as OpenCV Mat object
+        Mat mat;
+        // extract text from bitmap using Tesseract
+        mat = frame.rgba();
+////        Imgproc.cvtColor(mat, grayImage, Imgproc.COLOR_BGR2GRAY);
+//        Mat edges = new Mat();
+//        Imgproc.Canny(mat, edges, 100, 200);
+//        mat = edges;
 
         if(buttonClick){
+//            mat = frame.gray();
             buttonClick = false;
-//            Log.d("LOG_TAG","re2c="+getResult());
+//            recognizeImage(mat);
 
-            Mat rotated = new Mat();
-            rotate(gray, rotated, ROTATE_180);
-            Bitmap outputBitmap = Bitmap.createBitmap(rotated.cols(), rotated.rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(rotated, outputBitmap);
+            Mat grayImage = new Mat();
+            Imgproc.cvtColor(mat, grayImage, Imgproc.COLOR_BGR2GRAY);
 
-            recognizeImage2(outputBitmap);
+            // Apply adaptive thresholding to the grayscale image
+            Mat thresholdedImage = new Mat();
+            Imgproc.adaptiveThreshold(grayImage, thresholdedImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 11, 2);
 
-            // Convert the cropped frame to grayscale for better OCR performance
+            // Perform noise reduction on the thresholded image
+            Mat denoisedImage = new Mat();
+            Imgproc.medianBlur(thresholdedImage, denoisedImage, 3);
+            recognizeImage(denoisedImage);
+            mat = denoisedImage;
 
 
-            // Perform thresholding or other preprocessing if needed
+//            Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(mat, bitmap);
+//            mTess.setImage(bitmap);
+//            String text = mTess.getUTF8Text();
+//            Log.d(TAG, "MAT TEXT = "+text);
 
-//            // Pass the preprocessed frame to Tesseract for text recognition
-//            Bitmap bitmap = Bitmap.createBitmap(gray.cols(), gray.rows(), Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(gray, bitmap);
+//            // convert Mat to Bitmap
+//            Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(mat, bitmap);
+//            long currentTime = System.currentTimeMillis();
+//            double fps = mFrameCounter / ((currentTime - mStartTime) / 1000.0);
+//
+//            // initialize Tesseract with custom parameters
+//            mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD); // auto page segmentation mode
+//            mTess.setVariable("load_system_dawg", "false");
+//            mTess.setVariable("load_freq_dawg", "false");
+//            mTess.setVariable("load_unambig_dawg", "false");
+//            mTess.setVariable("load_punc_dawg", "false");
+//            mTess.setVariable("load_number_dawg", "false");
+//            mTess.setVariable("load_fixed_length_dawgs", "false");
+//            mTess.setVariable("load_bigram_dawg", "false");
+//            mTess.setVariable("load_fixed_length_dawgs", "false");
+//            mTess.setVariable("tessedit_ocr_engine_mode", "3"); // use both Tesseract and Cube OCR engines
+//            mTess.setVariable("language_model_penalty_non_freq_dict_word", "0.05"); // penalty for non-frequent dictionary words
+//            mTess.setVariable("language_model_penalty_non_dict_word", "0.1"); // penalty for non-dictionary words
+//            mTess.setVariable("textord_tabfind_order", "true"); // find text lines in tabular order
+//            mTess.setVariable("tessedit_char_whitelist", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"); // limit character recognition to alphanumeric characters
+//
+//            mTess.setImage(bitmap);
+//            String text = mTess.getUTF8Text();
+//
+//            // log text to console
+//            Log.d(TAG, "Detected text ("+fps+" fps): " + text);
+
+
+
+//            Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(mat, bitmap);
+//
+//// Preprocess the image
+//
+//// Set the image and language model
+//            mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
 //            mTess.setImage(bitmap);
 //
-//            String recognizedText = mTess.getUTF8Text();
-//            // Do something with the recognized text, such as logging or displaying it
-            Log.d("LOG_TAG","re3c="+getResult());
+//            String text = mTess.getUTF8Text();
+//            Log.d(TAG, "MAT TEXT = "+text);
 
+        }else{
+//            mat = frame.gray();
         }
-
-
-        return gray;
+        return mat;
     }
-
-    private final Object recycleLock = new Object();
-    public void recognizeImage2(@NonNull Bitmap imageBitmap) {
-
-        result = "";
-//        processing.setValue(true);
-//        progress.setValue("Processing...");
-        stopped = false;
-
-        // Start process in another thread
-        new Thread(() -> {
-//            mTess.setImage(imagePath);
-            // Or set it as Bitmap, Pix,...
-            mTess.setImage(imageBitmap);
-
-            long startTime = SystemClock.uptimeMillis();
-
-            // Use getHOCRText(0) method to trigger recognition with progress notifications and
-            // ability to cancel ongoing processing.
-            mTess.getHOCRText(0);
-
-            // At this point the recognition has completed (or was interrupted by calling stop())
-            // and we can get the results we want. In this case just normal UTF8 text.
-            //
-            // Note that calling only this method (without the getHOCRText() above) would also
-            // trigger the recognition and return the same result, but we would received no progress
-            // notifications and we wouldn't be able to stop() the ongoing recognition.
-            String text = mTess.getUTF8Text();
-            result = text;
-            Log.d("LOG_TAG", "result"+result);
-
-            // We can free up the recognition results and any stored image data in the tessApi
-            // if we don't need them anymore.
-            mTess.clear();
-
-            // Publish the results
-//            processing.postValue(false);
-//            if (stopped) {
-//                progress.postValue("Stopped.");
-//            } else {
-//                long duration = SystemClock.uptimeMillis() - startTime;
-//                progress.postValue(String.format(Locale.ENGLISH,
-//                        "Completed in %.3fs.", (duration / 1000f)));
-//            }
-        }).start();
-    }
-    @NonNull
-    public String getResult() {
-        return result;
-    }
-
-
-
 
 
 
@@ -439,7 +404,7 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
             // Assuming you have a bitmap named "bitmap" and a file name "filename"
             Bitmap bmp32 = bitmap.copy(Bitmap.Config.ARGB_8888, true);
             Utils.bitmapToMat(bmp32, mat);
-            Imgcodecs.imwrite("filename.png", mat);
+//            Imgcodecs.imwrite("filename.png", mat);
 
         }).start();
     }

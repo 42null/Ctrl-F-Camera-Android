@@ -68,8 +68,8 @@ TessBaseAPI tess = new TessBaseAPI();
 
 // Given path must contain subdirectory `tessdata` where are `*.traineddata` language files
 // Additionally, the path must be directly readable by the app
-String dataPath = new File(context.getFilesDir(), "tesseract").getAbsolutePath();
-
+`String dataPath = new File(context.getFilesDir(), "tesseract").getAbsolutePath();
+`
 // Initialize API for specified language (can be called multiple times during Tesseract lifetime)
 if (!tess.init(dataPath, "eng")) {
     // Error initializing Tesseract (wrong/inaccessible data path or not existing language file) 

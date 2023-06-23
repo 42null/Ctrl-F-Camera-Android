@@ -21,6 +21,7 @@ import org.opencv.core.Mat;
 import java.io.File;
 
 import cz.adaptech.tesseract4android.sample.Assets;
+import cz.adaptech.tesseract4android.sample.MainActivity;
 import cz.adaptech.tesseract4android.sample.databinding.FragmentMainBinding;
 import cz.adaptech.tesseract4android.sample.ui.main.MainViewModel;
 
@@ -36,6 +37,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -54,6 +56,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 
 import java.io.File;
 
@@ -63,7 +66,7 @@ import cz.adaptech.tesseract4android.sample.databinding.FragmentMainBinding;
 //
 //public class MainFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2 {
 //
-//    private static final String LOG_TAG = "LOG_TAG";
+//    private static final String TAG = "LOG_TAG";
 //
 //    private FragmentMainBinding binding;
 //
@@ -82,7 +85,7 @@ import cz.adaptech.tesseract4android.sample.databinding.FragmentMainBinding;
 //        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 //
 //        if(OpenCVLoader.initDebug()){
-//            Log.d(LOG_TAG, "OpenCV initialized");
+//            Log.d(TAG, "OpenCV initialized");
 //        }
 //
 //        // Copy sample image and language data to storage
@@ -205,7 +208,7 @@ import cz.adaptech.tesseract4android.sample.databinding.FragmentMainBinding;
 //}
 public class MainFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2 {
 
-    private static final String LOG_TAG = "LOG_TAG";
+    private static final String TAG = "LOG_TAG";
 
     private FragmentMainBinding binding;
 
@@ -217,13 +220,15 @@ public class MainFragment extends Fragment implements CameraBridgeViewBase.CvCam
         return new MainFragment();
     }
 
+    boolean buttonClick = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         if(OpenCVLoader.initDebug()){
-            Log.d(LOG_TAG, "OpenCV initialized");
+            Log.d(TAG, "OpenCV initialized");
         }
 
         // Copy sample image and language data to storage
@@ -234,6 +239,12 @@ public class MainFragment extends Fragment implements CameraBridgeViewBase.CvCam
             String language = Assets.getLanguage();
             viewModel.initTesseract(dataPath, language, TessBaseAPI.OEM_LSTM_ONLY);
         }
+
+        Button button = getView().findViewById(R.id.start);
+        button.setOnClickListener(v -> {
+            Log.d(TAG, "Button Pressed");
+            buttonClick = true;
+        });
     }
 
     @Nullable
@@ -254,8 +265,8 @@ public class MainFragment extends Fragment implements CameraBridgeViewBase.CvCam
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
         binding.start.setOnClickListener(v -> {
-            File imageFile = Assets.getImageFile(requireContext());
-            viewModel.recognizeImage(imageFile);
+//            File imageFile = Assets.getImageFile(requireContext());
+//            viewModel.recognizeImage(imageFile);
         });
         binding.stop.setOnClickListener(v -> {
             viewModel.stop();
@@ -279,25 +290,42 @@ public class MainFragment extends Fragment implements CameraBridgeViewBase.CvCam
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        Log.d(LOG_TAG, "onCameraViewStarted started");
+        Log.d(TAG, "onCameraViewStarted started");
     }
 
     @Override
     public void onCameraViewStopped() {
-        Log.d(LOG_TAG, "onCameraViewStarted onCameraViewStopped");
+        Log.d(TAG, "onCameraViewStarted onCameraViewStopped");
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
-        Log.d(LOG_TAG, "onCameraViewStarted frame");
+        Log.d(TAG, "onCameraViewStarted frame");
 
         // get current camera frame as OpenCV Mat object
         Mat mat = frame.gray();
+        mat.setTo(new Scalar(0, 0, 255));
 
         // update the camera view with the processed frame for live preview
         mOpenCvCameraView.deliverAndDrawFrame(frame);
 
         // return the processed frame for further processing (e.g., OCR)
+
+        if(buttonClick || MainActivity.buttonClick){
+            buttonClick = false;
+//                        buttonClick = false;
+//            System.out.println("BUTTON CLICK!!!!");
+            Log.d(TAG, "Starting...");
+//
+//            mTess.setImage(bitmap);
+//            String recognizedText = mTess.getUTF8Text();
+//            System.out.println("BUTTON CLICK!!!!+"+recognizedText);
+//
+////            mTess.recycle();
+//            mTess.clear();
+//            viewModel.recognizeImage();
+        }
+
         return mat;
     }
 
