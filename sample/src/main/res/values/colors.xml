@@ -3,8 +3,8 @@
 <!--    https://m3.material.io/theme-builder#/custom    -->
 
     <color name="lime_harmonized_text">#256d00</color>
-    <color name="harmonized_container">#a4f87c</color>
-    <color name="on_harmonized_container">#062100</color>
+    <color name="lime_harmonized_container">#a4f87c</color>
+    <color name="on_lime_harmonized_container">#062100</color>
 
 
 

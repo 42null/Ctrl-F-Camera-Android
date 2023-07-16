@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.main.MainFragment"
-    android:background="@color/on_harmonized_container">
+    android:background="@color/on_lime_harmonized_container">
 
 <!--    <ImageView-->
 <!--        android:id="@+id/image"-->

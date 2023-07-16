@@ -2,11 +2,11 @@
     <!-- Base application theme. -->
     <style name="Theme.Tesseract4Android" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/lime_harmonized_text</item>
-        <item name="colorPrimaryVariant">@color/harmonized_container</item>
+        <item name="colorPrimaryVariant">@color/lime_harmonized_container</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/on_harmonized_container</item>
-<!--        <item name="colorSecondaryVariant">@color/on_harmonized_container</item>-->
+        <item name="colorSecondary">@color/on_lime_harmonized_container</item>
+<!--        <item name="colorSecondaryVariant">@color/on_lime_harmonized_container</item>-->
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
