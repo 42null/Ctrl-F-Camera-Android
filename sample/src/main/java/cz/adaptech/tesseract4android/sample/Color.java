@@ -7,9 +7,12 @@ import org.opencv.core.Scalar;
 public class Color {
 
     public enum BasicColor{
-//        LIME_DARK(0, 109, 37),
-        LIME_DARK(0, 0, 255),
-        LIME_LIGHT(164, 248, 124);
+
+        BLUE(0, 0, 255),
+
+        LIME_DARK(0, 109, 37),
+        LIME_LIGHT(164, 248, 124),
+        PURE_WHITE(255, 255, 255);
 
         byte[] byteColorConstituents = new byte[3];
 

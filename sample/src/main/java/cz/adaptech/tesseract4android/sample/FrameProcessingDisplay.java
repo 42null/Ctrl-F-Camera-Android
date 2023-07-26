@@ -6,10 +6,11 @@ import static org.opencv.core.Core.ROTATE_90_COUNTERCLOCKWISE;
 import static org.opencv.core.Core.add;
 import static org.opencv.core.Core.rotate;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_SIMPLEX;
-import static org.opencv.imgproc.Imgproc.LINE_AA;
 import static org.opencv.imgproc.Imgproc.putText;
 import static cz.adaptech.tesseract4android.sample.MainActivity.LOG_TAG;
 
+import android.graphics.Rect;
+import android.graphics.fonts.Font;
 import android.util.Log;
 
 import com.googlecode.tesseract.android.ResultIterator;
@@ -21,13 +22,15 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 public class FrameProcessingDisplay {
 
     static Color lightLime = new Color(Color.BasicColor.LIME_LIGHT);
     static Color darkLime = new Color(Color.BasicColor.LIME_DARK);
+    static Color pureWhite = new Color(Color.BasicColor.PURE_WHITE);
+
+    static Color debuggingBlue = new Color(Color.BasicColor.BLUE);
 
 
     public FrameProcessingDisplay() {
@@ -35,39 +38,37 @@ public class FrameProcessingDisplay {
 
     public static Mat returnProcessedMat(Mat originalMat, ResultIterator iterator){
 
+        Mat textOverlayMat = new Mat(originalMat.size(), originalMat.type());//Same size & same type
+        textOverlayMat.setTo(new Scalar(0, 0, 0, 0));//Transparent
+        rotate(textOverlayMat, originalMat, ROTATE_90_CLOCKWISE);
+
 //        iterator.begin();
-        android.graphics.Rect rect;
+        Rect rect;
+        String word;
         StringBuilder result = new StringBuilder();
         rotate(originalMat, originalMat, ROTATE_180);
 
         do {
-            String word = iterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD);
+            word = iterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD);
             rect = iterator.getBoundingRect(TessBaseAPI.PageIteratorLevel.RIL_WORD);
-
 
             // Store or process the word and its location information
             result.append("Word: ").append(word).append(", Location: ").append(rect.toShortString()).append("\n");
 //            Place background on word
             Point leftBottom = new Point(rect.left,  rect.bottom);
             Point rightTop   = new Point(rect.right, rect.top);
-            Imgproc.rectangle(originalMat, leftBottom, rightTop, lightLime.getScalar((short) 255), 2);
+            Imgproc.rectangle(originalMat, leftBottom, rightTop, lightLime.getScalar((short) 255), -1);
 
-//            Mat rotated = new Mat();
-//            putText(originalMat, word, rightTop, Imgproc.FONT_HERSHEY_PLAIN, 1, darkLime.getScalar((short) 255), 2);
-//            putText(originalMat, word, leftBottom, Imgproc.FONT_HERSHEY_PLAIN, 1, darkLime.getScalar((short) 255), 2);
+            int x = (int) ((((double)rect.top/originalMat.height()))*originalMat.width());
+            int y = (int) ((((double)(originalMat.width()-rect.left)/originalMat.width()))*originalMat.height());
 
-            rotate(originalMat, originalMat, ROTATE_90_COUNTERCLOCKWISE);
-            int x = (int) ((((double)(originalMat.width()-rect.left)/originalMat.width()))*originalMat.height());
-            int y = (int) ((((double)rect.top/originalMat.height()))*originalMat.width());
-            Log.d(LOG_TAG, "x = "+x);
-            Log.d(LOG_TAG, "y = "+y);
+//            Decide on text size
+            int guessedWidth = rect.right - rect.left;
 
-//            putText(originalMat, word, new Point( y,x ), Imgproc.FONT_HERSHEY_PLAIN, 1, new Scalar(255,0,255,255), 2);
-            putText(originalMat, word, new Point(y,x), Imgproc.FONT_HERSHEY_PLAIN, 1, darkLime.getScalar((short) 255), 2);
+            double fontSize = guessedWidth/16D;
+            fontSize = fontSize/2.5D;
 
-            rotate(originalMat, originalMat, ROTATE_90_CLOCKWISE);
-
-
+            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, debuggingBlue.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
 
             Log.d(LOG_TAG, "result = "+result);
         } while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD));
@@ -76,12 +77,30 @@ public class FrameProcessingDisplay {
         rotate(originalMat, originalMat, ROTATE_180);
 
 
-//        Mat textImg = new Mat(new Size(originalMat.cols(), originalMat.rows()), CvType.CV_8UC3, Scalar.all(0));
-//        Imgproc.putText(textImg, "stackoverflow", new Point(0, originalMat.cols() / 2), Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, new Scalar(20, 20, 20), 2);
-//        Core.rotate(textImg, textImg, Core.ROTATE_90_COUNTERCLOCKWISE);
+        rotate(textOverlayMat, textOverlayMat, ROTATE_90_COUNTERCLOCKWISE);
+//        textOverlayMat.copyTo(originalMat, textOverlayMat);
+        textOverlayMat.copyTo(originalMat, textOverlayMat);
+
+
+
+
+        // Resize text image to match background image size
+        Mat resizedTextImage = new Mat();
+        Imgproc.resize(textOverlayMat, resizedTextImage, new Size(originalMat.cols(), originalMat.rows()));
+
+        // Create a mask from the alpha channel of the text image
+        Mat alphaChannel = new Mat();
+        Core.extractChannel(resizedTextImage, alphaChannel, 3);
+        Mat mask = new Mat();
+        Imgproc.threshold(alphaChannel, mask, 0, 255, Imgproc.THRESH_BINARY);
+
+        // Copy the text image to the background using the mask
+        resizedTextImage.copyTo(originalMat, mask);
+
+
 
         // Sum the images (add the text to the original img)
-//        add(originalMat, textImg, originalMat);
+//        add(originalMat, textOverlayMat, originalMat);
 
 
         return originalMat;

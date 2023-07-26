@@ -5,6 +5,7 @@ import static org.opencv.core.Core.rotate;
 import static org.opencv.imgproc.Imgproc.COLOR_RGBA2BGR;
 import static org.opencv.imgproc.Imgproc.resize;
 
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.MutableLiveData;
@@ -18,7 +19,9 @@ import android.os.SystemClock;
 import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.ResultIterator;
@@ -136,7 +139,13 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
         Button button = findViewById(R.id.start);
         button.setOnClickListener(v -> {
             Log.d(LOG_TAG, "Button Pressed original");
-            buttonClick = true;
+
+            if(keepFrame == null){
+                buttonClick = true;
+            }else{
+                keepFrame = null;
+                updateElementText( findViewById(R.id.start),"Scan For Text");
+            }
         });
 
 
@@ -296,28 +305,12 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
             Log.d("LOG_TAG", "Result: "+result.getValue());
 
             lastResultIterator = mTess.getResultIterator();
+
+            updateElementText( findViewById(R.id.start),"Searching for text...");//TODO: Make grab text from settings
             keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator);
-//
-//
-//
-//            android.graphics.Rect rect;
-//            StringBuilder result = new StringBuilder();
-//            Color lightLime = new Color(Color.BasicColor.LIME_LIGHT);
-//
-//            do {
-//                String word = lastResultIterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD);
-//                rect = lastResultIterator.getBoundingRect(TessBaseAPI.PageIteratorLevel.RIL_WORD);
-//
-//
-//                // Store or process the word and its location information
-//                result.append("Word: ").append(word).append(", Location: ").append(rect.toShortString()).append("\n");
-//                Imgproc.rectangle(originalMat, new Point(rect.left, rect.top), new Point(rect.right, rect.bottom), lightLime.getScalar((short) 255), -1);
-//                Log.d(LOG_TAG, "result = "+result);
-//            } while (lastResultIterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD));
-//            keepFrame = originalMat;
-//
-//
-//            Log.d(LOG_TAG, "result2 = "+result);
+            updateElementText( findViewById(R.id.start),"Take new picture");//TODO: Make grab text from settings
+
+//            updateElementText(findViewById(R.id.start),"Back to camera view");//TODO: Make grab text from settings
 
 
 
@@ -335,12 +328,22 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
                         "Completed in %.3fs.", (duration / 1000f)));
             }
 
-//            keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, getResultIterator());
-
 
 
         }).start();
     }
+
+    public void updateElementText(View view, String newText){
+        MainActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) view).setText(newText);
+            }
+        });
+    }
+
+
+
     @NonNull
     public String getResult() {
         return result.getValue();
@@ -350,8 +353,6 @@ public class MainActivity extends CameraActivity implements CameraBridgeViewBase
     public ResultIterator getResultIterator() {
         return lastResultIterator;
     }
-
-
 
 
 
