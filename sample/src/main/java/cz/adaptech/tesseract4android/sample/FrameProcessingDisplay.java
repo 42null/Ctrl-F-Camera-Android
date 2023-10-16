@@ -5,19 +5,15 @@ import static org.opencv.core.Core.ROTATE_90_CLOCKWISE;
 import static org.opencv.core.Core.ROTATE_90_COUNTERCLOCKWISE;
 import static org.opencv.core.Core.add;
 import static org.opencv.core.Core.rotate;
-import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_SIMPLEX;
 import static org.opencv.imgproc.Imgproc.putText;
-import static cz.adaptech.tesseract4android.sample.MainActivity.LOG_TAG;
 
 import android.graphics.Rect;
-import android.graphics.fonts.Font;
 import android.util.Log;
 
 import com.googlecode.tesseract.android.ResultIterator;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -70,7 +66,7 @@ public class FrameProcessingDisplay {
 
             putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, debuggingBlue.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
 
-            Log.d(LOG_TAG, "result = "+result);
+            Log.d(Settings.LOG_TAG, "result = "+result);
         } while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD));
 
         iterator.delete();

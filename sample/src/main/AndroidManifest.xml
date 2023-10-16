@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
-    <uses-feature android:name="android.hardware.camera.front"/>
-    <uses-feature android:name="android.hardware.camera.front.autofocus"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera.front" />
+    <uses-feature android:name="android.hardware.camera.front.autofocus" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,8 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".MyCameraActivity">
+        </activity>
     </application>
-<!--    android:backgroundColor="@color/lime_harmonized_text">-->
 
 </manifest>
