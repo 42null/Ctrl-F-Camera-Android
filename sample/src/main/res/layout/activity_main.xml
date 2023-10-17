@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:id="@+id/container"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    tools:context=".MainActivity" />-->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -21,26 +13,35 @@
 <!--    android:orientation="vertical"-->
 <!--    android:textAlignment="center">-->
 
-    <org.opencv.android.JavaCameraView
-        android:id="@+id/main_surface"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="640dp"
-        android:layout_marginBottom="43dp"
-        android:capitalize="none"
-        android:text="(Scan for text)"
-        android:textAlignment="center"
-        android:textAllCaps="false" />
+        android:backgroundTint="#9C27B0" />
+<!--        android:name="cz.adaptech.tesseract4android.sample.MyCameraFragment" />-->
+
+
+    <!--    TODO: Put back -->
+<!--    <Button-->
+<!--        android:id="@+id/start"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_marginTop="640dp"-->
+<!--        android:layout_marginBottom="43dp"-->
+<!--        android:background="@color/lime_harmonized_text"-->
+<!--        android:backgroundTint="@color/lime_harmonized_text"-->
+<!--        android:capitalize="none"-->
+<!--        android:text="(Scan for text)"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textAllCaps="false" />-->
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -114,7 +115,7 @@
                 android:id="@+id/selectorOptionCheckBoxText2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Second Option"
+                android:text="Copy Text"
                 android:textAlignment="center"
                 android:textColor="@color/lime_harmonized_container" />
 
@@ -135,7 +136,7 @@
 
 
 
-    <!--    <TextView-->
+<!--    <TextView-->
 <!--    android:id="@+id/textView2"-->
 <!--    android:layout_width="match_parent"-->
 <!--    android:layout_height="wrap_content"-->

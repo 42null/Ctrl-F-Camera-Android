@@ -8,26 +8,28 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelStore;
 import androidx.lifecycle.ViewModelStoreOwner;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.googlecode.tesseract.android.ResultIterator;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraActivity;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -35,22 +37,17 @@ import org.opencv.core.Mat;
 
 import java.util.Locale;
 
-import cz.adaptech.tesseract4android.sample.Assets;
-import cz.adaptech.tesseract4android.sample.FrameProcessingDisplay;
-import cz.adaptech.tesseract4android.sample.R;
-import cz.adaptech.tesseract4android.sample.Settings;
-import cz.adaptech.tesseract4android.sample.helpers.Converters;
+import cz.adaptech.tesseract4android.sample.helpers.CustomBitmapConverters;
 import cz.adaptech.tesseract4android.sample.helpers.OCR;
-import cz.adaptech.tesseract4android.sample.ui.main.MainViewModel;
 
-public class MyCameraActivity extends CameraActivity implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner {
+
+public class MyCameraFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner {
 
     private static final int CAMERA_PERMISSION_REQUEST = 1;
 
-    //    Page Elements
+    // Page Elements
     private CameraBridgeViewBase mOpenCvCameraView;
-    MaterialCheckBox materialCheckBox;
-
+    View startView;
 
     private TessBaseAPI mTess;
 
@@ -60,23 +57,25 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
     public static Mat keepFrame = null;
 
     private final MutableLiveData<String> result = new MutableLiveData<>();
-    //    private static String result = "NOT YET SET";
     private final MutableLiveData<Boolean> processing = new MutableLiveData<>(false);
     private ViewModelStore viewModelStore = new ViewModelStore();
-    private MainViewModel viewModel;
     private final MutableLiveData<String> progress = new MutableLiveData<>();
     private boolean stopped;
-
 
     private long mFrameCounter = 0;
     private long mStartTime = 0;
 
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+    private boolean showingPreprocess = Settings.STARTING_SETTING_SHOW_PREPROCESSING;
+
+    public MyCameraFragment() {
+        // Required empty public constructor
+        super(R.layout.my_camera_fragment);
+    }
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(requireContext()) {
         @Override
         public void onManagerConnected(int status) {
             if (status == LoaderCallbackInterface.SUCCESS) {
-                Log.i(Settings.LOG_TAG, "OpenCV loaded successfully");
-
                 mOpenCvCameraView.enableView();
             } else {
                 super.onManagerConnected(status);
@@ -85,116 +84,30 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(Settings.LOG_TAG, "called onCreate");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        MyCameraActivity myCameraActivity = new MyCameraActivity();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.my_camera_fragment, container, false);
 
-
-        if(OpenCVLoader.initDebug()) {
-            Log.d(Settings.LOG_TAG, "OpenCV initialized");
-        }
-
-
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // Permissions for Android 6+
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.CAMERA},
-                CAMERA_PERMISSION_REQUEST
-        );
-
-        setContentView(R.layout.activity_main);
-
-        mOpenCvCameraView = findViewById(R.id.main_surface);
-//        mOpenCvCameraView = findViewById(R.id.image);
-
+        mOpenCvCameraView = rootView.findViewById(R.id.main_surface);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        Button button = findViewById(R.id.start);
+        Button button = rootView.findViewById(R.id.start);
         button.setOnClickListener(v -> {
-            Log.d(Settings.LOG_TAG, "Button Pressed original");
-
-            if(keepFrame == null){
+            if (keepFrame == null) {
                 buttonClick = true;
-            }else{
-                keepFrame = null;
-                updateElementText( findViewById(R.id.start),"Scan For Text");
-            }
-        });
-
-
-        mTess = new TessBaseAPI();
-        Assets.extractAssets(getBaseContext());
-
-        String dataPath = Assets.getTessDataPath(getBaseContext());
-        String language = Assets.getLanguage();
-
-        if (!mTess.init(dataPath, "eng")) {
-            // Error initializing Tesseract (wrong/inaccessible data path or not existing language file)
-            mTess.recycle();
-            Log.d(Settings.LOG_TAG, "if (!mTess.init(dataPath, \"eng\")) {");
-            return;
-        }
-        mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO); // Set page segmentation mode
-
-
-        materialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
-        materialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(Settings.LOG_TAG, "!!!isChecked = "+isChecked);
-            }
-        });
-
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
-        if (requestCode == CAMERA_PERMISSION_REQUEST) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mOpenCvCameraView.setCameraPermissionGranted();
             } else {
-                String message = "Camera permission was not granted";
-                Log.e(Settings.LOG_TAG, message);
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                keepFrame = null;
+                updateElementText(rootView.findViewById(R.id.start), "Scan For Text");
             }
-        } else {
-            Log.e(Settings.LOG_TAG, "Unexpected permission request");
-        }
+        });
+        startView = button;//TODO: Cleanup
+
+        return rootView;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!OpenCVLoader.initDebug()) {
-            Log.d(Settings.LOG_TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
-        } else {
-            Log.d(Settings.LOG_TAG, "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        viewModelStore.clear();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-    }
+
 
     @Override
     public void onCameraViewStarted(int width, int height) {
@@ -204,12 +117,12 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
 
     @Override
     public void onCameraViewStopped() {
-    }
 
-//    Scalar rectangleColor = getColor(R.color.lime_harmonized_container) Scalar(255,255,100,255);
+    }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
+        Log.d(Settings.LOG_TAG, "CAMERA FRAME!!!");
         if(keepFrame != null){
             return keepFrame;
         }
@@ -228,17 +141,12 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
             return keepFrame;
         }
 
-        return OCR.preprocess(rgba);//rgba;
-    }
+        if(showingPreprocess){
+            return OCR.preprocess(rgba);//rgba;
+        }else{
+            return rgba;
+        }    }
 
-
-
-
-
-
-
-
-    private final Object recycleLock = new Object();
     public void recognizeImage2(@NonNull Mat mat, @NonNull Mat originalMat0) {
         keepFrame = originalMat0;
 
@@ -254,7 +162,7 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
 
 //            mTess.setImage(imagePath);
             // Or set it as Bitmap, Pix,...
-            mTess.setImage(Converters.matToBitmap(mat));
+            mTess.setImage(CustomBitmapConverters.matToBitmap(mat));
 
             long startTime = SystemClock.uptimeMillis();
 
@@ -274,9 +182,9 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
 
             lastResultIterator = mTess.getResultIterator();
 
-            updateElementText( findViewById(R.id.start),"Searching for text...");//TODO: Make grab text from settings
+            updateElementText( startView,"Searching for text...");//TODO: Make grab text from settings
             keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator);
-            updateElementText( findViewById(R.id.start),"Take new picture");//TODO: Make grab text from settings
+            updateElementText( startView,"Take new picture");//TODO: Make grab text from settings
 
 //            updateElementText(findViewById(R.id.start),"Back to camera view");//TODO: Make grab text from settings
 
@@ -301,16 +209,41 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
         }).start();
     }
 
-    public void updateElementText(View view, String newText){
-        cz.adaptech.tesseract4android.sample.MyCameraActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) view).setText(newText);
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mOpenCvCameraView.setCameraPermissionGranted();
+            } else {
+                String message = "Camera permission was not granted";
+                Log.e(Settings.LOG_TAG, message);
+//                Toast.makeText(this, message, Toast.LENGTH_LONG).show();@@@
             }
-        });
+        } else {
+            Log.e(Settings.LOG_TAG, "Unexpected permission request");
+        }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!OpenCVLoader.initDebug()) {
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, requireActivity(), mLoaderCallback);
+        } else {
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mOpenCvCameraView != null) {
+            mOpenCvCameraView.disableView();
+        }
+    }
+
+    // Implement other methods and functions as in your original code
 
     @NonNull
     public String getResult() {
@@ -325,6 +258,15 @@ public class MyCameraActivity extends CameraActivity implements CameraBridgeView
     @Override
     public ViewModelStore getViewModelStore() {
         return viewModelStore;
+    }
+
+    public void updateElementText(View view, String newText){
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) view).setText(newText);
+            }
+        });
     }
 
 }

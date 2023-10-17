@@ -1,0 +1,18 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="640dp"
+        android:layout_marginBottom="43dp"
+        android:background="@color/lime_harmonized_text"
+        android:backgroundTint="@color/lime_harmonized_text"
+        android:text="(Scan for text)"
+        android:textAlignment="center"
+        android:textAllCaps="false" />
+
+</FrameLayout>
