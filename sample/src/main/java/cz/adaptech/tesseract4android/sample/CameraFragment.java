@@ -3,8 +3,6 @@ package cz.adaptech.tesseract4android.sample;
 import static org.opencv.core.Core.ROTATE_180;
 import static org.opencv.core.Core.rotate;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -13,13 +11,14 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStore;
 import androidx.lifecycle.ViewModelStoreOwner;
 
@@ -34,23 +33,30 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
 import java.util.Locale;
-import java.util.Objects;
 
 import cz.adaptech.tesseract4android.sample.helpers.CustomBitmapConverters;
 import cz.adaptech.tesseract4android.sample.helpers.OCR;
 
-public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner{
+public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner {
 //public class MyCameraFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2, ViewModelStoreOwner {
 
 //    CONSTANTS
 
 //    PAGE ELEMENTS
     private CameraBridgeViewBase mOpenCvCameraView;
-    View startView;
+    View startButton;
+    ProgressBar textSearchingProgressBar;
+
+
+    private MyViewModel viewModel;
 
     private TessBaseAPI mTess;
 
     private ResultIterator lastResultIterator = null;
+
+//    private SeparateLiveResultObtainer separateLiveResultObtainer = new SeparateLiveResultObtainer();
+
+
 
     public static boolean buttonClick = false;
     public static Mat keepFrame = null;
@@ -80,9 +86,10 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
     };
 
 
-    public ExampleFragment2() {
+    public CameraFragment() {
         super(R.layout.example_fragment2);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -109,13 +116,28 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
         Log.d(Settings.LOG_TAG, "mOpenCvCameraView = "+mOpenCvCameraView);
         mOpenCvCameraView.setCameraPermissionGranted();
 
+
+        startButton = view.findViewById(R.id.start);
+        textSearchingProgressBar = view.findViewById(R.id.textSearchingProgressBar);
+
+
         return view;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(Settings.LOG_TAG, "called onCreate");
+        Log.i(Settings.LOG_TAG, "called onCreate in ExampleFragment2");
         super.onCreate(savedInstanceState);
+
+        viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
+
+        // Observe the LiveData and react to changes in the boolean value
+        viewModel.getMyBoolean().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean newValue) {
+                showingPreprocess = !showingPreprocess;
+            }
+        });
 
         if(OpenCVLoader.initDebug()) {
             Log.d(Settings.LOG_TAG, "OpenCV initialized");
@@ -182,6 +204,7 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
 
     @Override
     public void onResume() {
+
         super.onResume();
         if (!OpenCVLoader.initDebug()) {
             Log.d(Settings.LOG_TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
@@ -213,12 +236,11 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
     }
 
     @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Log.d(Settings.LOG_TAG, "CAMERA FRAME!!!");
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
         if(keepFrame != null){
             return keepFrame;
         }
-        Mat rgba = inputFrame.rgba();
+        Mat rgba = frame.rgba();
 
         if(buttonClick){
             buttonClick = false;
@@ -228,18 +250,24 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
 //            Mat rotated = new Mat();
             rotate(preprocessGray, preprocessGray, ROTATE_180);
 
-
+//            separateLiveResultObtainer.startNew();
             recognizeImage2(preprocessGray, rgba);
+
+
+
             return keepFrame;
         }
 
-//        if(showingPreprocess){
-//            return OCR.preprocess(rgba);//rgba;
-//        }else{
-//            return rgba;
-//        }
-        return rgba;
+
+        if(showingPreprocess){
+            return OCR.preprocess(rgba);//rgba;
+        }else{
+            return rgba;
+        }
     }
+
+
+
 
 
     public void recognizeImage2(@NonNull Mat mat, @NonNull Mat originalMat0) {
@@ -258,12 +286,14 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
 //            mTess.setImage(imagePath);
             // Or set it as Bitmap, Pix,...
             mTess.setImage(CustomBitmapConverters.matToBitmap(mat));
+            updateElementViability(textSearchingProgressBar, true);
 
             long startTime = SystemClock.uptimeMillis();
 
             // Use getHOCRText(0) method to trigger recognition with progress notifications and
             // ability to cancel ongoing processing.
             mTess.getHOCRText(0);
+
 
             // At this point the recognition has completed (or was interrupted by calling stop())
             // and we can get the results we want. In this case just normal UTF8 text.
@@ -277,17 +307,17 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
 
             lastResultIterator = mTess.getResultIterator();
 
-            updateElementText( startView,"Searching for text...");//TODO: Make grab text from settings
             keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator);
-            updateElementText( startView,"Take new picture");//TODO: Make grab text from settings
+            updateElementText(startButton,"Take new picture");//TODO: Make grab text from settings
 
 //            updateElementText(findViewById(R.id.start),"Back to camera view");//TODO: Make grab text from settings
-
-
 
             // We can free up the recognition results and any stored image data in the tessApi
             // if we don't need them anymore.
             mTess.clear();
+
+
+            updateElementViability(textSearchingProgressBar, false);
 
 //             Publish the results
             processing.postValue(false);
@@ -298,7 +328,18 @@ public class ExampleFragment2 extends Fragment implements CameraBridgeViewBase.C
                 progress.postValue(String.format(Locale.ENGLISH,
                         "Completed in %.3fs.", (duration / 1000f)));
             }
+
         }).start();
+
+    }
+
+    public void updateElementViability(View textSearchingProgressBar, boolean visible){
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                textSearchingProgressBar.setVisibility(visible? View.VISIBLE: View.INVISIBLE);
+            }
+        });
     }
 
     public void updateElementText(View view, String newText){

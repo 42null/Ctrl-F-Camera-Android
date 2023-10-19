@@ -33,7 +33,6 @@ public class FrameProcessingDisplay {
     }
 
     public static Mat returnProcessedMat(Mat originalMat, ResultIterator iterator){
-
         Mat textOverlayMat = new Mat(originalMat.size(), originalMat.type());//Same size & same type
         textOverlayMat.setTo(new Scalar(0, 0, 0, 0));//Transparent
         rotate(textOverlayMat, originalMat, ROTATE_90_CLOCKWISE);
@@ -64,10 +63,11 @@ public class FrameProcessingDisplay {
             double fontSize = guessedWidth/16D;
             fontSize = fontSize/2.5D;
 
-            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, debuggingBlue.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
+            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, darkLime.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
 
-            Log.d(Settings.LOG_TAG, "result = "+result);
         } while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD));
+
+        Log.d(Settings.LOG_TAG, "result = "+result);
 
         iterator.delete();
         rotate(originalMat, originalMat, ROTATE_180);

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <solid android:color="?attr/colorPrimary" />-->
+    <solid android:color="#FF3CFC" /> <!-- Bright to stand out, should be controlled by backgroundTint-->
+    <corners android:radius="@dimen/rounded_level2" />
+</shape>

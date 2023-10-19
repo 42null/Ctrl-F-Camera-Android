@@ -3,34 +3,27 @@ package cz.adaptech.tesseract4android.sample;
 import static cz.adaptech.tesseract4android.sample.Settings.CAMERA_PERMISSION_REQUEST;
 
 import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
 
-import org.jetbrains.annotations.NotNull;
 import org.opencv.android.OpenCVLoader;
-
-import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
 
     MaterialCheckBox materialCheckBox;
 
+    private CameraFragment cameraFragment;
 
-    private FragmentManager fragmentManager;
+    private MyViewModel viewModel;
 
     public MainActivity() {
         super(R.layout.activity_main);
@@ -40,10 +33,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null){
+            cameraFragment = new CameraFragment();
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.fragment_container_view, new ExampleFragment2(), null)
+                    .add(R.id.fragment_container, cameraFragment, null)
                     .commit();
         }
 
@@ -76,41 +70,47 @@ public class MainActivity extends AppCompatActivity {
 //                    .commitNow();
 //        }
 
+
         materialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
-        Log.d(Settings.LOG_TAG, "!!!isChecked = "+"A");
-        materialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
-                Log.d(Settings.LOG_TAG, "!!!isChecked = "+isChecked);
-//                myCameraActivity.setShowPreProcessing(isChecked);
-            }
-        });
-        Log.d(Settings.LOG_TAG, "!!!isChecked = "+"B");
-
-//        myCameraActivity = new MyCameraActivity();
-
-//        runOnUiThread(new Runnable()
-//        {
+//        materialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            ExampleFragment2 cameraFragment = (ExampleFragment2) fragmentManager.findFragmentById(R.id.example_fragment2);
+//
 //            @Override
-//            public void run()
-//            {
-//                materialCheckBox.setChecked(Settings.STARTING_SETTING_SHOW_PREPROCESSING);
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+//                Log.d(Settings.LOG_TAG, "!!!isChecked = "+isChecked);
+//                cameraFragment.setShowPreProcessing(isChecked);
 //            }
 //        });
-        fragmentManager = getSupportFragmentManager();
-//        fragmentManager.getFragment(ExampleFragment.bu)
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                materialCheckBox.setChecked(Settings.STARTING_SETTING_SHOW_PREPROCESSING);
+            }
+        });
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        cameraFragment = (CameraFragment) fragmentManager.findFragmentById(R.id.example_fragment2);
+
+        viewModel = new ViewModelProvider(this).get(MyViewModel.class);
+        materialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d(Settings.LOG_TAG, "!!!isChecked = " + isChecked);
+                viewModel.setMyBoolean(isChecked);
+            }
+        });
+        viewModel = new ViewModelProvider(this).get(MyViewModel.class);
+
+
+
     }
 
     @Override
     protected void onStart(){
         super.onStart();
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .setReorderingAllowed(true)
-//                    .add(R.id.fragment_container_view, ExampleFragment.class, null)
-//                    .commit();
-////        }
     }
 
     @Override
@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.e(Settings.LOG_TAG, "Unexpected permission request");
 //        }
 //    }
+
 
 
 }

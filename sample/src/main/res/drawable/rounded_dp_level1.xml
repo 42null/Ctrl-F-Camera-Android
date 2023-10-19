@@ -2,5 +2,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 <!--    <solid android:color="?attr/colorPrimary" />-->
     <solid android:color="#FF3CFC" /> <!-- Bright to stand out, should be controlled by backgroundTint-->
-    <corners android:radius="4dp" />
+    <corners android:radius="@dimen/rounded_level1" />
 </shape>
