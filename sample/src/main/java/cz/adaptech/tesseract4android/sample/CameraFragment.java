@@ -132,7 +132,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
 
         // Observe the LiveData and react to changes in the boolean value
-        viewModel.getMyBoolean().observe(this, new Observer<Boolean>() {
+        viewModel.getBooleanCheckboxShowPreProcessing().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean newValue) {
                 showingPreprocess = !showingPreprocess;
@@ -308,6 +308,9 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
             lastResultIterator = mTess.getResultIterator();
 
             keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator);
+            viewModel.setAllTextFromLastDetection(result.getValue());
+
+
             updateElementText(startButton,"Take new picture");//TODO: Make grab text from settings
 
 //            updateElementText(findViewById(R.id.start),"Back to camera view");//TODO: Make grab text from settings

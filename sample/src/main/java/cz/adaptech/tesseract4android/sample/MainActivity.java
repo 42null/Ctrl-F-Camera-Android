@@ -3,8 +3,12 @@ package cz.adaptech.tesseract4android.sample;
 import static cz.adaptech.tesseract4android.sample.Settings.CAMERA_PERMISSION_REQUEST;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 
 import org.opencv.android.OpenCVLoader;
@@ -19,7 +24,8 @@ import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity {
 
-    MaterialCheckBox materialCheckBox;
+    MaterialCheckBox showPreProcessingMaterialCheckBox;
+    MaterialButton copyTextMaterialButton;
 
     private CameraFragment cameraFragment;
 
@@ -71,40 +77,42 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
 
-        materialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
-//        materialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            ExampleFragment2 cameraFragment = (ExampleFragment2) fragmentManager.findFragmentById(R.id.example_fragment2);
-//
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
-//                Log.d(Settings.LOG_TAG, "!!!isChecked = "+isChecked);
-//                cameraFragment.setShowPreProcessing(isChecked);
-//            }
-//        });
+        showPreProcessingMaterialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
+        copyTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionCopyButton);
         runOnUiThread(new Runnable()
         {
             @Override
             public void run()
             {
-                materialCheckBox.setChecked(Settings.STARTING_SETTING_SHOW_PREPROCESSING);
+                showPreProcessingMaterialCheckBox.setChecked(Settings.STARTING_SETTING_SHOW_PREPROCESSING);
             }
         });
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        cameraFragment = (CameraFragment) fragmentManager.findFragmentById(R.id.example_fragment2);
-
+        cameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.example_fragment2);
         viewModel = new ViewModelProvider(this).get(MyViewModel.class);
-        materialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+        showPreProcessingMaterialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(Settings.LOG_TAG, "!!!isChecked = " + isChecked);
-                viewModel.setMyBoolean(isChecked);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+                viewModel.setBooleanCheckboxShowPreProcessing(isChecked);
             }
         });
+
+        copyTextMaterialButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                String textToCopy = viewModel.getAllTextFromLastDetection();
+                ClipData clip = ClipData.newPlainText("label", textToCopy);
+                clipboard.setPrimaryClip(clip);
+            }
+        });
+
+
+
+
+
         viewModel = new ViewModelProvider(this).get(MyViewModel.class);
-
-
-
     }
 
     @Override
