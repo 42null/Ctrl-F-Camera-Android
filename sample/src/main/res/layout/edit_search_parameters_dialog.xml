@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<!--    <TextView-->
+<!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--        android:id="@+id/alertTitle"-->
+<!--        style="?android:attr/textAppearanceLarge"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="&lt;PROGRAMMATICALLY SET TITLE HERE&gt;"-->
+<!--        android:gravity="center" />-->
+<!--    &lt;!&ndash; Made very obvious so that it will easily be noticed if not set &ndash;&gt;-->
+<!--    -->
+
+    <!-- EditText Field -->
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter search word here" />
+
+        <!-- Multi-Choice Items -->
+    <ListView
+        android:id="@+id/multiChoiceListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:choiceMode="multipleChoice" />
+
+
+</LinearLayout>
