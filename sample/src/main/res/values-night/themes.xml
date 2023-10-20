@@ -30,7 +30,9 @@
         <!--        <item name="colorSecondaryVariant">@color/on_lime_harmonized_container</item>-->
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/lime_harmonized_text</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/black</item>
+
         <!-- Customize your theme here. -->
     </style>
 

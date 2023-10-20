@@ -6,30 +6,42 @@ import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.opencv.android.OpenCVLoader;
 
 
 public class MainActivity extends AppCompatActivity {
 
+//    Settings bar
     MaterialCheckBox showPreProcessingMaterialCheckBox;
     MaterialButton copyTextMaterialButton;
+    MaterialButton findTextMaterialButton;
+    MaterialButton editTextMaterialButton;
+
+
 
     private CameraFragment cameraFragment;
 
     private MyViewModel viewModel;
+
+
+    private int lastNavBarLightColor = -1; //Unset
 
     public MainActivity() {
         super(R.layout.activity_main);
@@ -76,25 +88,27 @@ public class MainActivity extends AppCompatActivity {
 //                    .commitNow();
 //        }
 
-
-        showPreProcessingMaterialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
-        copyTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionCopyButton);
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                showPreProcessingMaterialCheckBox.setChecked(Settings.STARTING_SETTING_SHOW_PREPROCESSING);
-            }
-        });
-
+//        Larger parts
         cameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.example_fragment2);
         viewModel = new ViewModelProvider(this).get(MyViewModel.class);
 
+//        Page elements (settings bar)
+        showPreProcessingMaterialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
+        copyTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionCopyButton);
+        findTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionFindButton);
+        editTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionEditButton);
+
+        runOnUiThread(new Runnable(){
+            @Override
+            public void run(){ showPreProcessingMaterialCheckBox.setChecked(Settings.STARTING_SETTING_SHOW_PREPROCESSING); }
+        });
+
+        changeNavigationBarColor(showPreProcessingMaterialCheckBox.getCheckedState() == MaterialCheckBox.STATE_CHECKED);
         showPreProcessingMaterialCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 viewModel.setBooleanCheckboxShowPreProcessing(isChecked);
+                changeNavigationBarColor(isChecked);
             }
         });
 
@@ -105,15 +119,73 @@ public class MainActivity extends AppCompatActivity {
                 String textToCopy = viewModel.getAllTextFromLastDetection();
                 ClipData clip = ClipData.newPlainText("label", textToCopy);
                 clipboard.setPrimaryClip(clip);
+
+//                int snackbarAvailableWidth = getInnerAvailableElementWidth(v);
+//
+//                Paint textPaint = new Paint();
+//                float textWidth = textPaint.measureText(textToCopy);
+//
+//                String truncatedText;
+//                if (textWidth > snackbarAvailableWidth) {
+//                    int maxLength = (int)((snackbarAvailableWidth / textWidth) * textToCopy.length());
+//                    truncatedText = textToCopy.substring(0, maxLength);
+//                } else {
+//                    // The original text fits, so display it as is
+//                    truncatedText = textToCopy;
+//                }
+//
+//                Snackbar.make(v, "Copied \""+(truncatedText)+"\"", Snackbar.LENGTH_SHORT).show();
             }
         });
 
+        findTextMaterialButton.setOnClickListener(v -> {
+//            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//            String textToCopy = viewModel.getAllTextFromLastDetection();
+//            ClipData clip = ClipData.newPlainText("label", textToCopy);
+//            clipboard.setPrimaryClip(clip);
+        });
 
+        editTextMaterialButton.setOnClickListener(v -> {
+            new SearchFilteringDialogFragment().show(getSupportFragmentManager(), "GAME_DIALOG");
 
+//            SearchFilterEditSettingsDialog searchSettingsFragment = new SearchFilterEditSettingsDialog();
+//            searchSettingsFragment.show(getSupportFragmentManager(), "SearchSettingsFragment");
+        });
 
-
-        viewModel = new ViewModelProvider(this).get(MyViewModel.class);
     }
+
+    private int getInnerAvailableElementWidth(View view){
+        // Calculate available width
+        int viewWidth = view.getWidth();
+        int padding = view.getPaddingLeft() + view.getPaddingRight();
+        int margin = ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).leftMargin + ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).rightMargin;
+        return viewWidth - padding - margin;
+    }
+
+    private void changeNavigationBarColor(boolean isShowingPreProcessing){//TODO: Fix to be update instead of change!!!
+        if(Settings.allowChangeNavigationBarColor){
+            // Check if the current mode is light
+            int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (currentNightMode == Configuration.UI_MODE_NIGHT_NO){
+                // Set the navigationBarColor only in light mode
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//                if(viewModel.getBooleanCheckboxShowPreProcessing().getValue()){ //Might not update in time
+                    int color = getWindow().getNavigationBarColor();
+                    if(lastNavBarLightColor == -1 && color != getResources().getColor(R.color.white)){
+                        lastNavBarLightColor = color;
+                    }
+
+                    if(isShowingPreProcessing){
+                        getWindow().setNavigationBarColor(getResources().getColor(R.color.white));
+                    }else{
+                        getWindow().setNavigationBarColor(lastNavBarLightColor);
+                    }
+
+                }
+            }
+        }
+    }
+
 
     @Override
     protected void onStart(){

@@ -12,4 +12,6 @@ public class Settings {
     public static final boolean STARTING_SETTING_SHOW_PREPROCESSING = true;
 
 
+    public static boolean allowChangeNavigationBarColor = false; //Setting to white does not allow enough contrast with the navigation bar icons.
+
 }

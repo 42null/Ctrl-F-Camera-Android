@@ -3,4 +3,8 @@
 
     <dimen name="rounded_level1">4dp</dimen>
     <dimen name="rounded_level2">8dp</dimen>
+
+
+    <dimen name="rounded_level5">40dp</dimen> <!--For menus & dialogs-->
+
 </resources>
