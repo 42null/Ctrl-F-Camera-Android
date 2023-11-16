@@ -34,7 +34,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/artificalActionBar">
-
     </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,11 +50,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/artificalActionBar">
 
-        <!-- Vertical checkbox with label -->
+
+        <!-- Vertical button small -->
         <LinearLayout
-            android:id="@+id/settingHolderComponentShowPreProcessing"
+            android:id="@+id/settingHolderComponentShrinkMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/optionsSidebar"
             android:layout_marginStart="@dimen/rounded_level1"
             android:layout_marginTop="@dimen/rounded_level1"
             android:layout_marginEnd="@dimen/rounded_level1"
@@ -66,152 +67,189 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/selectorOptionCheckBoxText1"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectorOptionShrinkButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="@dimen/rounded_level1"
+                android:layout_marginEnd="@dimen/rounded_level1"
+                android:height="1dp"
+                android:background="@drawable/custom_dropdown_indicator"
+                android:rotation="180"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:backgroundTint="?attr/colorPrimaryVariant"
+                app:useMaterialThemeColors="true" />
+        </LinearLayout>
+
+
+        <!-- Vertical Layout For Menu Options for Folding Up-->
+        <LinearLayout
+            android:id="@+id/optionsSelectorMenuDropdownArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentShrinkMenu">
+
+            <!-- Vertical checkbox with label -->
+            <LinearLayout
+                android:id="@+id/settingHolderComponentShowPreProcessing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Show Pre- Processing"
-                android:textAlignment="center"
-                android:textColor="?attr/colorPrimaryVariant"
+                android:layout_marginStart="@dimen/rounded_level1"
+                android:layout_marginTop="@dimen/rounded_level1"
+                android:layout_marginEnd="@dimen/rounded_level1"
+                android:background="@drawable/rounded_dp_level2"
+                android:backgroundTint="?attr/colorPrimary"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectorOptionCheckbox" />
+                app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentShrinkMenu">
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/selectorOptionCheckbox1"
+                <TextView
+                    android:id="@+id/selectorOptionCheckBoxText1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show Pre- Processing"
+                    android:textAlignment="center"
+                    android:textColor="?attr/colorPrimaryVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/selectorOptionCheckbox" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/selectorOptionCheckbox1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    app:buttonTint="@drawable/custom_checkbox"
+                    app:layout_constraintEnd_toEndOf="@+id/settingHolderComponentShowPreProcessing"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/settingHolderComponentShowPreProcessing"
+                    app:useMaterialThemeColors="false" />
+            </LinearLayout>
+
+            <!-- Vertical button with label -->
+            <LinearLayout
+                android:id="@+id/settingHolderComponentCopy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                app:buttonTint="@drawable/custom_checkbox"
-                app:layout_constraintEnd_toEndOf="@+id/settingHolderComponentShowPreProcessing"
-                app:layout_constraintHorizontal_bias="0.5"
+                android:layout_below="@+id/optionsSidebar"
+                android:layout_marginStart="@dimen/rounded_level1"
+                android:layout_marginTop="@dimen/rounded_level1"
+                android:layout_marginEnd="@dimen/rounded_level1"
+                android:background="@drawable/rounded_dp_level2"
+                android:backgroundTint="?attr/colorPrimary"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/settingHolderComponentShowPreProcessing"
-                app:useMaterialThemeColors="false" />
-        </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentShowPreProcessing">
 
-        <!-- Vertical button with label -->
-        <LinearLayout
-            android:id="@+id/settingHolderComponentCopy"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/optionsSidebar"
-            android:layout_marginStart="@dimen/rounded_level1"
-            android:layout_marginTop="@dimen/rounded_level1"
-            android:layout_marginEnd="@dimen/rounded_level1"
-            android:background="@drawable/rounded_dp_level2"
-            android:backgroundTint="?attr/colorPrimary"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentShowPreProcessing">
+                <TextView
+                    android:id="@+id/selectorOptionCopyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Copy"
+                    android:textAlignment="center"
+                    android:textColor="?attr/colorPrimaryVariant" />
 
-            <TextView
-                android:id="@+id/selectorOptionCopyText"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/selectorOptionCopyButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/rounded_level1"
+                    android:layout_marginEnd="@dimen/rounded_level1"
+                    android:backgroundTint="?attr/colorPrimaryVariant"
+                    android:text="Ctr+c"
+                    android:textColor="?attr/colorPrimary"
+                    app:useMaterialThemeColors="true" />
+            </LinearLayout>
+
+            <!-- Vertical button with label -->
+            <LinearLayout
+                android:id="@+id/settingHolderComponentEdit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Copy"
-                android:textAlignment="center"
-                android:textColor="?attr/colorPrimaryVariant" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/selectorOptionCopyButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="75dp"
+                android:layout_below="@+id/optionsSidebar"
                 android:layout_marginStart="@dimen/rounded_level1"
+                android:layout_marginTop="@dimen/rounded_level1"
                 android:layout_marginEnd="@dimen/rounded_level1"
-                android:backgroundTint="?attr/colorPrimaryVariant"
-                android:text="Ctr+c"
-                android:textColor="?attr/colorPrimary"
-                app:useMaterialThemeColors="true" />
-        </LinearLayout>
+                android:background="@drawable/rounded_dp_level2"
+                android:backgroundTint="?attr/colorPrimary"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentCopy">
 
-        <!-- Vertical button with label -->
-        <LinearLayout
-            android:id="@+id/settingHolderComponentEdit"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_below="@+id/optionsSidebar"
-            android:layout_marginStart="@dimen/rounded_level1"
-            android:layout_marginTop="@dimen/rounded_level1"
-            android:layout_marginEnd="@dimen/rounded_level1"
-            android:background="@drawable/rounded_dp_level2"
-            android:backgroundTint="?attr/colorPrimary"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentCopy">
+                <TextView
+                    android:id="@+id/selectorOptionEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Edit"
+                    android:textAlignment="center"
+                    android:textColor="?attr/colorPrimaryVariant" />
 
-            <TextView
-                android:id="@+id/selectorOptionEditText"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/selectorOptionEditButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3.9dp"
+                    android:layout_marginEnd="3.9dp"
+                    android:backgroundTint="?attr/colorPrimaryVariant"
+                    android:text="Edit"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="13sp"
+                    app:useMaterialThemeColors="true" />
+                <!--                android:textSize="14sp"-->
+                <!--                android:layout_marginStart="2.47dp"-->
+                <!--                android:layout_marginEnd="2.48dp"-->
+            </LinearLayout>
+
+            <!-- Vertical button with label -->
+            <LinearLayout
+                android:id="@+id/settingHolderComponentFind"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Edit"
-                android:textAlignment="center"
-                android:textColor="?attr/colorPrimaryVariant" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/selectorOptionEditButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="3.9dp"
-                android:layout_marginEnd="3.9dp"
-                android:backgroundTint="?attr/colorPrimaryVariant"
-                android:text="Edit"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="13sp"
-                app:useMaterialThemeColors="true" />
-            <!--                android:textSize="14sp"-->
-            <!--                android:layout_marginStart="2.47dp"-->
-            <!--                android:layout_marginEnd="2.48dp"-->
-        </LinearLayout>
-
-        <!-- Vertical button with label -->
-        <LinearLayout
-            android:id="@+id/settingHolderComponentFind"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_below="@+id/optionsSidebar"
-            android:layout_marginStart="@dimen/rounded_level1"
-            android:layout_marginTop="@dimen/rounded_level1"
-            android:layout_marginEnd="@dimen/rounded_level1"
-            android:background="@drawable/rounded_dp_level2"
-            android:backgroundTint="?attr/colorPrimary"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentEdit">
-
-            <TextView
-                android:id="@+id/selectorOptionFindText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Search"
-                android:textAlignment="center"
-                android:textColor="?attr/colorPrimaryVariant" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/selectorOptionFindButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="75dp"
+                android:layout_below="@+id/optionsSidebar"
                 android:layout_marginStart="@dimen/rounded_level1"
+                android:layout_marginTop="@dimen/rounded_level1"
                 android:layout_marginEnd="@dimen/rounded_level1"
-                android:backgroundTint="?attr/colorPrimaryVariant"
-                android:text="ctr+f"
-                android:textColor="?attr/colorPrimary"
-                app:useMaterialThemeColors="true" />
-        </LinearLayout>
+                android:background="@drawable/rounded_dp_level2"
+                android:backgroundTint="?attr/colorPrimary"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/settingHolderComponentEdit">
 
+                <TextView
+                    android:id="@+id/selectorOptionFindText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Search"
+                    android:textAlignment="center"
+                    android:textColor="?attr/colorPrimaryVariant" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/selectorOptionFindButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/rounded_level1"
+                    android:layout_marginEnd="@dimen/rounded_level1"
+                    android:backgroundTint="?attr/colorPrimaryVariant"
+                    android:text="ctr+f"
+                    android:textColor="?attr/colorPrimary"
+                    app:useMaterialThemeColors="true" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-
-
-
-
-<!--    <TextView-->
+    <!--    <TextView-->
 <!--    android:id="@+id/textView2"-->
 <!--    android:layout_width="match_parent"-->
 <!--    android:layout_height="wrap_content"-->

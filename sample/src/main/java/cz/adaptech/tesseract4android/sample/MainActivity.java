@@ -8,12 +8,14 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Paint;
+import android.icu.lang.UCharacter;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
 //    Settings bar
     MaterialCheckBox showPreProcessingMaterialCheckBox;
+    MaterialButton dropdownMenuMaterialButton;
     MaterialButton copyTextMaterialButton;
     MaterialButton findTextMaterialButton;
     MaterialButton editTextMaterialButton;
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        Page elements (settings bar)
         showPreProcessingMaterialCheckBox = (MaterialCheckBox) findViewById(R.id.selectorOptionCheckbox1);
+        dropdownMenuMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionShrinkButton);
         copyTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionCopyButton);
         findTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionFindButton);
         editTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionEditButton);
@@ -109,6 +113,21 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 viewModel.setBooleanCheckboxShowPreProcessing(isChecked);
                 changeNavigationBarColor(isChecked);
+            }
+        });
+
+        LinearLayout menuDropdownAreaLayout = findViewById(R.id.optionsSelectorMenuDropdownArea);
+        dropdownMenuMaterialButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                float currentRotation = dropdownMenuMaterialButton.getRotation();
+                if (currentRotation == 0) {
+                    dropdownMenuMaterialButton.setRotation(180);
+                    menuDropdownAreaLayout.setVisibility(View.VISIBLE);
+                } else {
+                    dropdownMenuMaterialButton.setRotation(0);
+                    menuDropdownAreaLayout.setVisibility(View.GONE);
+                }
             }
         });
 
