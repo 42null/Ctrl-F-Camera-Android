@@ -11,6 +11,14 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="app_banner_top">Camera Ctrl+F</string>
 
+    <!-- Camera Actions -->
+        <!-- Options -->
+    <string name="take_picture">Take Picture</string>
+    <string name="take_new_picture">Take New Picture</string>
+    <string name="scan_picture">Scan For Text</string>
+        <!-- Notices -->
+    <string name="processing_image">Searching For Text…</string>
+
 
 
     <string-array name="search_options">

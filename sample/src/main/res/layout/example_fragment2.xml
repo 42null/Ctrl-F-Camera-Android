@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/example_fragment2">
@@ -9,18 +10,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ProgressBar
+<!--    <ProgressBar-->
+<!--        android:id="@+id/textSearchingProgressBar"-->
+<!--        style="@android:style/Widget.ProgressBar.Horizontal"-->
+<!--        android:layout_width="200dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_gravity="center_horizontal|center_vertical"-->
+<!--        android:backgroundTint="#AA1C1C"-->
+<!--        android:indeterminate="true"-->
+<!--        android:progress="25"-->
+<!--        android:progressBackgroundTint="?attr/colorPrimaryVariant"-->
+<!--        android:progressTint="?attr/colorPrimary"-->
+<!--        android:visibility="invisible" />-->
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/textSearchingProgressBar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:backgroundTint="#AA1C1C"
         android:indeterminate="true"
-        android:progress="25"
-        android:progressBackgroundTint="?attr/colorPrimaryVariant"
-        android:progressTint="?attr/colorPrimary"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        app:indicatorColor="?attr/colorPrimaryVariant"
+        app:trackColor="?attr/colorPrimary"
+        app:indicatorSize="50dp" />
 
 
     <Button
@@ -32,7 +44,7 @@
         android:layout_marginBottom="43dp"
         android:background="@drawable/rounded_dp_level2"
         android:backgroundTint="@color/lime_harmonized_text"
-        android:text="(Scan for text)"
+        android:text="@string/take_picture"
         android:textAlignment="center"
         android:textAllCaps="false" />
 

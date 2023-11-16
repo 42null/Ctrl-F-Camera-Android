@@ -106,7 +106,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
                 buttonClick = true;
             }else{
                 keepFrame = null;
-                updateElementText( view.findViewById(R.id.start),"Scan For Text");
+                updateElementText( view.findViewById(R.id.start),getContext().getString(R.string.scan_picture));
             }
         });
 
@@ -278,7 +278,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 //        processing.setValue(true);
 //        progress.setValue("Processing...");
         stopped = false;
-
+        startButton.setClickable(false);//Disable button
         // Start process in another thread
         new Thread(() -> {
             Mat originalMat = originalMat0.clone();
@@ -287,6 +287,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
             // Or set it as Bitmap, Pix,...
             mTess.setImage(CustomBitmapConverters.matToBitmap(mat));
             updateElementViability(textSearchingProgressBar, true);
+            updateElementText(startButton, getContext().getString(R.string.processing_image));
 
             long startTime = SystemClock.uptimeMillis();
 
@@ -311,9 +312,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
             viewModel.setAllTextFromLastDetection(result.getValue());
 
 
-            updateElementText(startButton,"Take new picture");//TODO: Make grab text from settings
-
-//            updateElementText(findViewById(R.id.start),"Back to camera view");//TODO: Make grab text from settings
+            updateElementText(startButton, getContext().getString(R.string.take_new_picture));
 
             // We can free up the recognition results and any stored image data in the tessApi
             // if we don't need them anymore.
@@ -331,7 +330,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
                 progress.postValue(String.format(Locale.ENGLISH,
                         "Completed in %.3fs.", (duration / 1000f)));
             }
-
+            startButton.setClickable(true); //Re-enable button
         }).start();
 
     }

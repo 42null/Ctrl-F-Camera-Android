@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -76,10 +78,6 @@ public class SearchFilteringDialogFragment extends DialogFragment {
         editText.setHint("Enter search word here");
         editText.setText(persistentText);
 
-//        for (int j = 0; j < 2; j++) {
-//            multiChoiceListView.setItemChecked(j, true);
-//        }
-
         int i = 0;
         for(String key : localSearchOptionsHashMap.keySet()){ //Avoids giving access
             providedItemsKeys[i] = key;
@@ -114,6 +112,25 @@ public class SearchFilteringDialogFragment extends DialogFragment {
 //        builder.setView(editText);
 
         AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(dialogInterface -> {
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            TypedValue typedValuePrimary = new TypedValue();
+            TypedValue typedValueSecondary = new TypedValue();
+            getContext().getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValuePrimary, true);
+            int colorBackground = typedValuePrimary.data;
+            getContext().getTheme().resolveAttribute(android.R.attr.colorBackground, typedValueSecondary, true);
+            int colorText = typedValueSecondary.data;
+
+            positiveButton.setBackgroundColor(colorBackground);
+            negativeButton.setBackgroundColor(colorBackground);
+
+            positiveButton.setTextColor(colorText);
+            negativeButton.setTextColor(colorText);
+        });
+
+
         return dialog;
     }
 

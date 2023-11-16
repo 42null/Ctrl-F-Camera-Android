@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -7,48 +7,49 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <View
+        android:id="@+id/artificalActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="#000000"
+        android:backgroundTint="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 <!--    android:id="@+id/top_banner"-->
 <!--    android:layout_width="match_parent"-->
 <!--    android:layout_height="match_parent"-->
 <!--    android:orientation="vertical"-->
 <!--    android:textAlignment="center">-->
 
-    <!--    TODO: Put back -->
-<!--    <Button-->
-<!--        android:id="@+id/start"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_alignParentTop="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_centerInParent="true"-->
-<!--        android:layout_marginTop="640dp"-->
-<!--        android:layout_marginBottom="43dp"-->
-<!--        android:background="@color/lime_harmonized_text"-->
-<!--        android:backgroundTint="@color/lime_harmonized_text"-->
-<!--        android:capitalize="none"-->
-<!--        android:text="(Scan for text)"-->
-<!--        android:textAlignment="center"-->
-<!--        android:textAllCaps="false" />-->
-
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/artificalActionBar">
+
+    </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/optionsSidebar"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/rounded_level1"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="@dimen/rounded_level2"
+        android:layout_marginTop="@dimen/rounded_level2"
         android:background="@drawable/rounded_dp_level2"
         android:backgroundTint="?attr/colorPrimaryVariant"
-        android:paddingBottom="@dimen/rounded_level1">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/artificalActionBar">
 
         <!-- Vertical checkbox with label -->
         <LinearLayout
@@ -200,8 +201,8 @@
                 android:textColor="?attr/colorPrimary"
                 app:useMaterialThemeColors="true" />
         </LinearLayout>
-        
-        
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -222,4 +223,4 @@
 <!--    android:textAlignment="center"-->
 <!--    android:textColor="@color/colorAccent"-->
 <!--    android:textSize="22sp" />-->
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
