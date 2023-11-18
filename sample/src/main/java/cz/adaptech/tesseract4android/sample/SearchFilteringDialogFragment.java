@@ -43,17 +43,11 @@ public class SearchFilteringDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         localSearchOptionsHashMap = viewModel.getSettingsStateMap(); //Get latest
+        persistentText = viewModel.getSearchString(); //Get latest
+
 
         // Use the Builder class for convenient dialog construction.
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-//        View customTitleView = getLayoutInflater().inflate(R.layout.edit_search_parameters_dialog, null);
-//        builder.setCustomTitle(customTitleView);
-//        TextView titleTextView = customTitleView.findViewById(R.id.alertTitle);
-//        titleTextView.setText("Search Filter Options");
-//        // Create an EditText field programmatically
-//        final EditText editText = new EditText(getContext());
-//        editText.setHint("Enter search word here");
 
         View customDialogView = getLayoutInflater().inflate(R.layout.edit_search_parameters_dialog, null);
         builder.setView(customDialogView);
@@ -92,6 +86,7 @@ public class SearchFilteringDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id){
                 //Save settings
                 viewModel.setSettingsStateMap(localSearchOptionsHashMap);
+                viewModel.setSearchString(editText.getText().toString());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){//Cancel (Button text set later)

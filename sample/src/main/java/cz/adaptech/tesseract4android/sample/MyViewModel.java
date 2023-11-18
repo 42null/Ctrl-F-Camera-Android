@@ -11,6 +11,8 @@ public class MyViewModel extends ViewModel {
     private MutableLiveData<Boolean> showPreProcessing = new MutableLiveData<>();
     private MutableLiveData<String> stringAllTextFromLastDetection = new MutableLiveData<>("");
 
+    private MutableLiveData<String> searchString = new MutableLiveData<>("");
+
     private Map<String, Boolean> settingsStateMap = new HashMap<>() {{
         put("\"(\" = \"C\"", true);
         put("Ignore Capitalization", false);
@@ -33,6 +35,14 @@ public class MyViewModel extends ViewModel {
         return stringAllTextFromLastDetection.getValue();
     }
 
+
+//Search Strings
+    public void setSearchString(String value) {
+        searchString.postValue(value);
+    }
+    public String getSearchString() {
+        return searchString.getValue();
+    }
 
 //Search Settings
     public void setSettingsStateMap(Map<String, Boolean> settingsMap) {

@@ -20,6 +20,7 @@
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="ERROR: THIS SHOULD NOT BE VISIBLE,"
         android:hint="Enter search word here" />
 
         <!-- Multi-Choice Items -->

@@ -13,7 +13,7 @@
 
     <!-- Camera Actions -->
         <!-- Options -->
-    <string name="take_picture">Take Picture</string>
+    <string name="take_picture">Search For Text</string>
     <string name="take_new_picture">Take New Picture</string>
     <string name="scan_picture">Scan For Text</string>
         <!-- Notices -->

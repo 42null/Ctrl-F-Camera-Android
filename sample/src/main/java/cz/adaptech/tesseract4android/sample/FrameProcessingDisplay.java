@@ -20,6 +20,8 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.List;
+
 public class FrameProcessingDisplay {
 
     static Color lightLime = new Color(Color.BasicColor.LIME_LIGHT);
@@ -32,7 +34,7 @@ public class FrameProcessingDisplay {
     public FrameProcessingDisplay() {
     }
 
-    public static Mat returnProcessedMat(Mat originalMat, ResultIterator iterator){
+    public static Mat returnProcessedMat(Mat originalMat, ResultIterator iterator, List<String> searchForStrings){
         Mat textOverlayMat = new Mat(originalMat.size(), originalMat.type());//Same size & same type
         textOverlayMat.setTo(new Scalar(0, 0, 0, 0));//Transparent
         rotate(textOverlayMat, originalMat, ROTATE_90_CLOCKWISE);
@@ -46,13 +48,22 @@ public class FrameProcessingDisplay {
         do {
             word = iterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD);
             rect = iterator.getBoundingRect(TessBaseAPI.PageIteratorLevel.RIL_WORD);
+            Color boxColor, textColor;
 
             // Store or process the word and its location information
             result.append("Word: ").append(word).append(", Location: ").append(rect.toShortString()).append("\n");
 //            Place background on word
             Point leftBottom = new Point(rect.left,  rect.bottom);
             Point rightTop   = new Point(rect.right, rect.top);
-            Imgproc.rectangle(originalMat, leftBottom, rightTop, lightLime.getScalar((short) 255), -1);
+
+
+            if(searchForStrings.contains(word)){
+                boxColor = debuggingBlue;
+                textColor = lightLime;
+            }else{
+                boxColor = lightLime;
+                textColor = debuggingBlue;
+            }
 
             int x = (int) ((((double)rect.top/originalMat.height()))*originalMat.width());
             int y = (int) ((((double)(originalMat.width()-rect.left)/originalMat.width()))*originalMat.height());
@@ -63,7 +74,9 @@ public class FrameProcessingDisplay {
             double fontSize = guessedWidth/16D;
             fontSize = fontSize/2.5D;
 
-            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, darkLime.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
+//            Apply to mat
+            Imgproc.rectangle(originalMat, leftBottom, rightTop, boxColor.getScalar((short) 255), -1);
+            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, textColor.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
 
         } while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD));
 

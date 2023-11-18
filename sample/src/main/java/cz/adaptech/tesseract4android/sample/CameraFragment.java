@@ -1,6 +1,7 @@
 package cz.adaptech.tesseract4android.sample;
 
 import static org.opencv.core.Core.ROTATE_180;
+import static org.opencv.core.Core.log;
 import static org.opencv.core.Core.rotate;
 
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import cz.adaptech.tesseract4android.sample.helpers.CustomBitmapConverters;
@@ -240,6 +242,10 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         if(keepFrame != null){
             return keepFrame;
         }
+
+        if(frame == null){
+            Log.i(Settings.LOG_TAG, "FRAME WAS NULL!!!!");
+        }
         Mat rgba = frame.rgba();
 
         if(buttonClick){
@@ -308,7 +314,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 
             lastResultIterator = mTess.getResultIterator();
 
-            keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator);
+            keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator, Arrays.asList((new String[]{viewModel.getSearchString()})));
             viewModel.setAllTextFromLastDetection(result.getValue());
 
 
