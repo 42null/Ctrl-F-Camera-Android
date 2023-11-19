@@ -314,7 +314,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 
             lastResultIterator = mTess.getResultIterator();
 
-            keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator, Arrays.asList((new String[]{viewModel.getSearchString()})));
+            keepFrame = FrameProcessingDisplay.returnProcessedMat(originalMat, lastResultIterator, viewModel.generateWordChecker());
             viewModel.setAllTextFromLastDetection(result.getValue());
 
 

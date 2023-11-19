@@ -4,18 +4,23 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MyViewModel extends ViewModel {
+
+    public static final String keyParenthesesAsCs = "\"(\" = \"C\""; //TODO: Move to enum
+    public static final String keyIgnoreCapitalization = "Ignore Capitalization"; //TODO: Move to enum
+
     private MutableLiveData<Boolean> showPreProcessing = new MutableLiveData<>();
     private MutableLiveData<String> stringAllTextFromLastDetection = new MutableLiveData<>("");
 
     private MutableLiveData<String> searchString = new MutableLiveData<>("");
 
     private Map<String, Boolean> settingsStateMap = new HashMap<>() {{
-        put("\"(\" = \"C\"", true);
-        put("Ignore Capitalization", false);
+        put(keyParenthesesAsCs, false);
+        put(keyIgnoreCapitalization, true);
     }};
 
 
@@ -53,6 +58,11 @@ public class MyViewModel extends ViewModel {
     }
 
 
+
+
+    public WordChecker generateWordChecker(){
+        return new WordChecker(Arrays.asList(searchString.getValue()), settingsStateMap.get(keyIgnoreCapitalization));
+    }
 
 
 }

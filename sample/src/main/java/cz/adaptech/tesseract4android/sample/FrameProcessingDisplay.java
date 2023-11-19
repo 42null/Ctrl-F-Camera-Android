@@ -15,6 +15,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -34,7 +35,7 @@ public class FrameProcessingDisplay {
     public FrameProcessingDisplay() {
     }
 
-    public static Mat returnProcessedMat(Mat originalMat, ResultIterator iterator, List<String> searchForStrings){
+    public static Mat returnProcessedMat(Mat originalMat, ResultIterator iterator, WordChecker wordChecker){
         Mat textOverlayMat = new Mat(originalMat.size(), originalMat.type());//Same size & same type
         textOverlayMat.setTo(new Scalar(0, 0, 0, 0));//Transparent
         rotate(textOverlayMat, originalMat, ROTATE_90_CLOCKWISE);
@@ -56,8 +57,7 @@ public class FrameProcessingDisplay {
             Point leftBottom = new Point(rect.left,  rect.bottom);
             Point rightTop   = new Point(rect.right, rect.top);
 
-
-            if(searchForStrings.contains(word)){
+            if(wordChecker.checkWord(word)){
                 boxColor = debuggingBlue;
                 textColor = lightLime;
             }else{
@@ -69,14 +69,31 @@ public class FrameProcessingDisplay {
             int y = (int) ((((double)(originalMat.width()-rect.left)/originalMat.width()))*originalMat.height());
 
 //            Decide on text size
-            int guessedWidth = rect.right - rect.left;
+//            int guessedWidth = rect.right - rect.left;
 
-            double fontSize = guessedWidth/16D;
-            fontSize = fontSize/2.5D;
+//            double fontSize = guessedWidth/16D;
+//            double fontSize = guessedWidth;
+            double fontSize = 0.2;
+//            fontSize = fontSize/2.5D;
+
+            double targetWidth = (rect.right - rect.left);//*0.9;
+
+//            while((Imgproc.getTextSize(word, Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, (int) Math.round(fontSize*0.1), null)).width <= targetWidth ){
+//                fontSize *= 1.1;
+//            }
+
+            // Initial font size
+            fontSize = 10.0;
+
+// Adjust the loop condition to ensure the font size fits the width of the rectangle
+            while ((Imgproc.getTextSize(word, Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, (int) Math.ceil(fontSize / 10), null)).width > (rect.bottom - rect.top)) {
+                fontSize -= 0.2; // Decrease font size
+            }
+//            fontSize -= 0.2;
 
 //            Apply to mat
             Imgproc.rectangle(originalMat, leftBottom, rightTop, boxColor.getScalar((short) 255), -1);
-            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, textColor.getScalar((short) 255), (int) Math.max(fontSize/10, 1));
+            putText(textOverlayMat, word, new Point(x,y-5), Imgproc.FONT_HERSHEY_SIMPLEX, fontSize, textColor.getScalar((short) 255), (int) Math.round(fontSize*0.1));
 
         } while (iterator.next(TessBaseAPI.PageIteratorLevel.RIL_WORD));
 
@@ -114,5 +131,6 @@ public class FrameProcessingDisplay {
 
         return originalMat;
     }
+
 
 }
