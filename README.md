@@ -7,6 +7,20 @@ Ctrl+F camera is a app that uses the camera and to search for text. You specify 
 
 ## Current Progress Snapshots
 
+|
+
+<section>
+ <img src="/Screenshots/screenshot_before_scan_no_preprocessing_menu_visiable.jpeg" alt="Standard view (no search)" width="24%" />
+ <img src="/Screenshots/screenshot_results_show_preprocessing_edit_menu.jpeg" alt="Standard view (no search)" width="24%" />
+ <img src="/Screenshots/screenshot_show_preprocessing_showing_results.jpeg" alt="Standard view w/results display" width="24%" />
+ <img src="/Screenshots/screenshot_before_scan_preprocessing_menu_minimized.jpeg" alt="Standard view w/results display" width="24%" />
+</section>
+
+- Standard view (no search)
+- Preprocessing view w/edit menu
+- Standard view w/results display
+- Preprocessing view minimized side options
+
 Notice, at this time Ctrl+F Camera is only avaiable for Andriod, IOS development is not guaranteed.
 
 ##Below is the orignal README.md for the [Tesseract4Android](https://github.com/adaptech-cz/Tesseract4Android) project, along with their licences. Ctrl+F Camera builds on top of this.
