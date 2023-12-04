@@ -7,8 +7,6 @@ Ctrl+F camera is a app that uses the camera and to search for text. You specify 
 
 ## Current Progress Snapshots
 
-|
-
 <section>
  <img src="/Screenshots/screenshot_before_scan_no_preprocessing_menu_visiable.jpeg" alt="Standard view (no search)" width="24%" />
  <img src="/Screenshots/screenshot_results_show_preprocessing_edit_menu.jpeg" alt="Standard view (no search)" width="24%" />
