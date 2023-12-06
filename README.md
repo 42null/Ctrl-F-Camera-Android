@@ -1,3 +1,31 @@
+# Ctrl+F Camera
+<hr>
+
+This project is made from a fork of [Tesseract4Android](https://github.com/adaptech-cz/Tesseract4Android) and uses [OpenCV](https://github.com/opencv/opencv) for image processing.
+
+Ctrl+F camera is a app that uses the camera and to search for text. You specify search parameters and if the camera is able to find matching text, it highlights it along with making it easyier to export. Great for finding that phrase you were looking for on a printed page. Under development, actively being worked on.
+
+## Current Progress Snapshots
+
+<section>
+ <img src="/Screenshots/screenshot_before_scan_no_preprocessing_menu_visiable.jpeg" alt="Standard view (no search)" width="24%" />
+ <img src="/Screenshots/screenshot_results_show_preprocessing_edit_menu.jpeg" alt="Standard view (no search)" width="24%" />
+ <img src="/Screenshots/screenshot_show_preprocessing_showing_results.jpeg" alt="Standard view w/results display" width="24%" />
+ <img src="/Screenshots/screenshot_before_scan_preprocessing_menu_minimized.jpeg" alt="Standard view w/results display" width="24%" />
+</section>
+
+- Standard view (no search)
+- Preprocessing view w/edit menu
+- Standard view w/results display
+- Preprocessing view minimized side options
+
+Notice, at this time Ctrl+F Camera is only avaiable for Andriod, IOS development is not guaranteed.
+
+##Below is the orignal README.md for the [Tesseract4Android](https://github.com/adaptech-cz/Tesseract4Android) project, along with their licences. Ctrl+F Camera builds on top of this.
+
+<hr>
+
+
 [![](https://jitpack.io/v/cz.adaptech/tesseract4android.svg)](https://jitpack.io/#cz.adaptech/tesseract4android)
 
 # Tesseract4Android
