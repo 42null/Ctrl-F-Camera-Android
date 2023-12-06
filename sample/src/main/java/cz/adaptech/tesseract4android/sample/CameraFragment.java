@@ -1,17 +1,24 @@
 package cz.adaptech.tesseract4android.sample;
 
 import static org.opencv.core.Core.ROTATE_180;
-import static org.opencv.core.Core.log;
 import static org.opencv.core.Core.rotate;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,7 +40,6 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 import cz.adaptech.tesseract4android.sample.helpers.CustomBitmapConverters;
@@ -46,6 +52,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 
 //    PAGE ELEMENTS
     private CameraBridgeViewBase mOpenCvCameraView;
+    private SurfaceView canvasView;
     View startButton;
     ProgressBar textSearchingProgressBar;
 
@@ -72,6 +79,12 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
     private long mFrameCounter = 0;
     private long mStartTime = 0;
 
+
+//    Pointer selecting events
+    int[] startHoldLocation = new int[2];
+
+
+
     private boolean showingPreprocess = Settings.STARTING_SETTING_SHOW_PREPROCESSING;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(getContext()) {
@@ -88,17 +101,17 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
     };
 
 
-    public CameraFragment() {
-        super(R.layout.example_fragment2);
+    public CameraFragment(Context context) {
+        super(R.layout.camera_fragment);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(Settings.LOG_TAG, "called onCreateView");
-        View view = inflater.inflate(R.layout.example_fragment2, container, false);
+        View view = inflater.inflate(R.layout.camera_fragment, container, false);
 
-        mOpenCvCameraView = view.findViewById(R.id.main_surface);
+        mOpenCvCameraView = view.findViewById(R.id.main_camera_surface);
+//        canvasView = view.findViewById(R.id.camera_view_overlay_canvas);
 
         Button button = view.findViewById(R.id.start);
         button.setOnClickListener(v -> {
@@ -111,6 +124,7 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
                 updateElementText( view.findViewById(R.id.start),getContext().getString(R.string.scan_picture));
             }
         });
+
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
@@ -168,6 +182,10 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
         mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO); // Set page segmentation mode
 
     }
+
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
@@ -259,11 +277,8 @@ public class CameraFragment extends Fragment implements CameraBridgeViewBase.CvC
 //            separateLiveResultObtainer.startNew();
             recognizeImage2(preprocessGray, rgba);
 
-
-
             return keepFrame;
         }
-
 
         if(showingPreprocess){
             return OCR.preprocess(rgba);//rgba;

@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     MaterialButton findTextMaterialButton;
     MaterialButton editTextMaterialButton;
 
+    LinearLayout findTextMaterialSection;
 
 
     private CameraFragment cameraFragment;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null){
-            cameraFragment = new CameraFragment();
+            cameraFragment = new CameraFragment(this.getBaseContext());
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .add(R.id.fragment_container, cameraFragment, null)
@@ -101,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
         copyTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionCopyButton);
         findTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionFindButton);
         editTextMaterialButton = (MaterialButton) findViewById(R.id.selectorOptionEditButton);
+
+        findTextMaterialSection = (LinearLayout) findViewById(R.id.settingHolderComponentFind);
+        findTextMaterialSection.setVisibility(View.GONE);//Hide as other button outside of collapsable menu is used
+
 
         runOnUiThread(new Runnable(){
             @Override

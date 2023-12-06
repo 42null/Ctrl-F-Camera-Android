@@ -7,6 +7,7 @@ import static org.opencv.core.Core.add;
 import static org.opencv.core.Core.rotate;
 import static org.opencv.imgproc.Imgproc.putText;
 
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Log;
 
@@ -15,21 +16,18 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.List;
-
 public class FrameProcessingDisplay {
 
-    static Color lightLime = new Color(Color.BasicColor.LIME_LIGHT);
-    static Color darkLime = new Color(Color.BasicColor.LIME_DARK);
-    static Color pureWhite = new Color(Color.BasicColor.PURE_WHITE);
+    static ColorController lightLime = new ColorController(ColorController.BasicColor.LIME_LIGHT);
+    static ColorController darkLime = new ColorController(ColorController.BasicColor.LIME_DARK);
+    static ColorController pureWhite = new ColorController(ColorController.BasicColor.PURE_WHITE);
 
-    static Color debuggingBlue = new Color(Color.BasicColor.BLUE);
+    static ColorController debuggingBlue = new ColorController(ColorController.BasicColor.BLUE);
 
 
     public FrameProcessingDisplay() {
@@ -49,7 +47,7 @@ public class FrameProcessingDisplay {
         do {
             word = iterator.getUTF8Text(TessBaseAPI.PageIteratorLevel.RIL_WORD);
             rect = iterator.getBoundingRect(TessBaseAPI.PageIteratorLevel.RIL_WORD);
-            Color boxColor, textColor;
+            ColorController boxColor, textColor;
 
             // Store or process the word and its location information
             result.append("Word: ").append(word).append(", Location: ").append(rect.toShortString()).append("\n");

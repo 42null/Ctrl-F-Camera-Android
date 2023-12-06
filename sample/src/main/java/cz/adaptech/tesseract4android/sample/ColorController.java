@@ -4,7 +4,7 @@ import androidx.core.math.MathUtils;
 
 import org.opencv.core.Scalar;
 
-public class Color {
+public class ColorController {
 
     public enum BasicColor{
 
@@ -41,7 +41,7 @@ public class Color {
 
     private BasicColor primaryColor = null;
 
-    public Color(BasicColor primaryColor){
+    public ColorController(BasicColor primaryColor){
         this.primaryColor = primaryColor;
     }
 
